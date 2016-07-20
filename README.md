@@ -38,8 +38,9 @@ cd bin/<hit tab a bunch>/release
 
 [When this fails](http://developer.download.nvidia.com/compute/cuda/8.0/secure/rc1/docs/sidebar/CUDA_Installation_Guide_Linux.pdf?autho=1467774980_5ca3f259e9607d5cea123ad23068575e&file=CUDA_Installation_Guide_Linux.pdf)
 
->For errors related to gcc or g++ versions
-manually install older versions: `sudo apt-get install gcc-4.7 g++-4.7`
+For errors related to gcc or g++ versions
+
+install older version: `sudo apt-get install gcc-4.7 g++-4.7`
 create a link to cuda installation: `sudo ln -s /usr/bin/gcc-4.7 /usr/local/cuda/bin/gcc` and repeat with `g++` instead of `gcc`
 
 ## Install OpenCV
