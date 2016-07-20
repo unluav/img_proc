@@ -40,15 +40,15 @@ cd bin/<hit tab a bunch>/release
 
 For errors related to gcc or g++ versions
 
-install older version: `sudo apt-get install gcc-4.7 g++-4.7`
-create a link to cuda installation: `sudo ln -s /usr/bin/gcc-4.7 /usr/local/cuda/bin/gcc` and repeat with `g++` instead of `gcc`
+install older version: `sudo apt-get install gcc-4.9 g++-4.9`
+create a link to cuda installation: `sudo ln -s /usr/bin/gcc-4.9 /usr/local/cuda/bin/gcc` and repeat with `g++` instead of `gcc`
 
 ## Install OpenCV
 1. make sure we got the required libraries
 ```
 sudo apt-get update
 
-sudo apt-get install libopencv-dev build-essential checkinstall cmake pkg-config yasm libtiff4-dev libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils
+sudo apt-get install libopencv-dev build-essential checkinstall cmake pkg-config yasm libtiff5-dev libjpeg-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils
 
 sudo add-apt-repository ppa:jon-severinsson/ffmpeg  
 sudo apt-get update  
