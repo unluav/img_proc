@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( gpu_canny_edge )
+find_package( OpenCV REQUIRED )
+add_executable( gpu_canny_edge.exe gpu_canny_edge.cpp )
+target_link_libraries( gpu_canny_edge.exe ${OpenCV_LIBS} )
