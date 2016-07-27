@@ -9,7 +9,7 @@ I would recommend some form of Ubuntu I go for Ubuntu Gnome. Install it in it's 
 1. Download [Nvidia Driver](http://www.nvidia.com/object/unix.html)
 2. `sudo sh <DRIVER FILE NAME HERE>`
 3. reboot
-4. verify everything works `nvidia-mi` should show your driver version and gpu model 
+4. verify everything works `nvidia-smi` should show your driver version and gpu model 
 
 [link](http://askubuntu.com/questions/451221/ubuntu-14-04-install-nvidia-driver) for when this fails 
 
