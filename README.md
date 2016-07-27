@@ -74,7 +74,13 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB
 ```
 make  
 sudo make install  
-
+```
+##Gcc too new error
+if you get an error about gcc not being supported run the following
+```
+cd /user/bin  
+sudo rm -rf gcc-5
+sudo rm -rf g++-5
 ```
 5.Configure Library Search Path
 ```
