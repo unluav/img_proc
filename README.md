@@ -36,7 +36,7 @@ cd bin/<hit tab a bunch>/release
 ```
 >This should pass and give you stats on your gpu. You can run a few more programs to verify the install
 
-[When this fails](http://developer.download.nvidia.com/compute/cuda/8.0/secure/rc1/docs/sidebar/CUDA_Installation_Guide_Linux.pdf?autho=1467774980_5ca3f259e9607d5cea123ad23068575e&file=CUDA_Installation_Guide_Linux.pdf)
+[When this fails](https://developer.nvidia.com/cuda-downloads)
 
 For errors related to gcc or g++ versions
 
