@@ -1,6 +1,7 @@
 #include "opencv2/highgui.hpp"
 #include <stdio.h>
 #include <cv.h>
+#include "../utilities/FrameRateMonitor.h"
 #include "opencv2/cudaimgproc.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/core/utility.hpp"
@@ -41,11 +42,12 @@ int main(int argc, char *argv[]) {
     edges = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
  
     /* calculate the delay between each frame and display video's FPS */
-    printf("%2.2f FPS\n", cvGetCaptureProperty(video, CV_CAP_PROP_FPS));
     delay = (int) (1000/cvGetCaptureProperty(video, CV_CAP_PROP_FPS));
     Ptr<cv::cuda::CannyEdgeDetector> canny = cuda::createCannyEdgeDetector(1, 100, 3);
-    int last_time = time(0);
-	while (frame) {
+    FrameRateMonitor frm;
+    frm.Start();
+    while (frame) {
+        frm.MarkFrame();    
 	cuda::GpuMat tempFrame, tempGrey, tempEdges;
 	
 	//Creating a Mat version of the current frame
@@ -62,16 +64,13 @@ int main(int argc, char *argv[]) {
 	tempEdges.download(e);
 	/* show loaded frame */
        	imshow(window_name, e);
- 	if(counter%50==0){
-		printf("time:%ld\n", time(0)-last_time);
-		last_time=time(0);
-	}
-	counter++;
 	
 	/* load and check next frame*/
         frame = cvQueryFrame(video);
 	if(!frame) {
-		printf("error loading frame.\n");
+            frm.Stop();
+            frm.DumpInfo();
+	    printf("error loading frame.\n");
 		return 1;
 	}
  
@@ -79,4 +78,6 @@ int main(int argc, char *argv[]) {
         key = cvWaitKey(delay);
         if(key=='q') break;
     }
+    frm.Stop();
+    frm.DumpInfo();
 }
