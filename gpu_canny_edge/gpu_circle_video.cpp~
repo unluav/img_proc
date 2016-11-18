@@ -51,9 +51,8 @@ int main(int argc, char *argv[]) {
     //FrameRateMonitor frm;
     //frm.Start();
     while (frame) {
-        //frm.MarkFrame(); 
-	vector< vector<Point> > contours; 
-	vector<Vec4i> hierarchy;  
+        //frm.MarkFrame();  
+	vector<Vec3f> circles;  
 	gpu::GpuMat tempFrame, tempGrey, tempEdges;
 	
 	//Creating a Mat version of the current frame
@@ -66,19 +65,23 @@ int main(int argc, char *argv[]) {
     gpu::cvtColor(tempFrame, tempGrey, CV_BGR2GRAY);
 	threshold(tempGrey, tempEdges, threshold_value, max_BINARY_value,threshold_type);
        
- 	Canny(tempEdges, tempEdges, 1, 100, 3); 
+ 	
 	Mat e;
-	tempEdges.download(e);
-	findContours(e, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+printf("we are here.\n");
+	tempGrey.download(e);
+	HoughCircles( e, circles, CV_HOUGH_GRADIENT, 1, tempGrey.rows/8, 200, 100, 0, 0 );
 	
-	Mat drawing = Mat::zeros(e.size(), CV_8UC3 );
-  for( int i = 0; i< contours.size(); i++ )
+  for( int i = 0; i< circles.size(); i++ )
      {
-       Scalar color = Scalar( 255, 255, 255 );
-       drawContours( drawing, contours, i, color, CV_FILLED, 8, hierarchy);
+		      Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+      int radius = cvRound(circles[i][2]);
+      // circle center
+      circle( e, center, 3, Scalar(0,255,0), -1, 8, 0 );
+      // circle outline
+      circle( e, center, radius, Scalar(0,0,255), 3, 8, 0 );
      }
 	/* show loaded frame */
-       	imshow(window_name, drawing);
+       	imshow(window_name, e);
 	
 	/* load and check next frame*/
         frame = cvQueryFrame(video);
