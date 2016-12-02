@@ -15,9 +15,7 @@ int main(int argc, char *argv[]) {
     IplImage  *frame = NULL;
     IplImage  *grey  = NULL;
     IplImage  *edges = NULL;
-	int threshold_value=15, threshold_type=3;
-	int const max_value = 255;
-	int const max_type = 3;
+	int threshold_value=50, threshold_type=2;
 	int const max_BINARY_value = 255;
 
  
@@ -51,6 +49,7 @@ int main(int argc, char *argv[]) {
     //FrameRateMonitor frm;
     //frm.Start();
     while (frame) {
+	frmCounter++;
 	if(frmCounter%4 == 0){
 		continue;
 	}
@@ -66,29 +65,28 @@ int main(int argc, char *argv[]) {
 	/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
            Uses two threshold and a aperture parameter for Sobel operator. */
     gpu::cvtColor(tempFrame, tempGrey, CV_BGR2GRAY);
-	GaussianBlur( tempGrey, tempGrey, Size(9,9), 2, 2 );
+	GaussianBlur( tempGrey, tempGrey, Size(3,3), 1, 1 );
 	threshold(tempGrey, tempEdges, threshold_value, max_BINARY_value,threshold_type);
        
  	
 	Mat e;
 	tempEdges.download(e);
 	HoughCircles( e, circles, CV_HOUGH_GRADIENT, 1, tempGrey.rows/8, 200, 100, 0, 0 );
-	
+	gpu:cvtColor(e,e,CV_GRAY2BGR);
   for( int i = 0; i< circles.size(); i++ )
      {
 		      Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
       int radius = cvRound(circles[i][2]);
       // circle center
-      circle( e, center, 3, Scalar(255,0,0,255), -1, 8, 0 );
+      circle( e, center, 12, Scalar(0,255,165), -1, 8, 0 );
       // circle outline
-      circle( e, center, radius, Scalar(255,0,0,255), 3, 8, 0 );
+      circle( e, center, radius, Scalar(0,255,165), 12, 8, 0 );
      }
 	/* show loaded frame */
        	imshow(window_name, e);
 	
 	/* load and check next frame*/
         frame = cvQueryFrame(video);
-		frmCounter+=1;
 	if(!frame) {
           //  frm.Stop();
           // frm.DumpInfo();
