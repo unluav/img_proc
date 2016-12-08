@@ -1,11 +1,16 @@
 # img_processing
 we take images and then process them
+# Table of Contents
+### 1)Environment Setup
+### 2)What is CUDA, and Do I Need It?
+### 3)What to Do if I Can't Use CUDA
 
-#Enviornment Setup
+# 1)Enviornment Setup
 ## Install Linux
-I would recommend some form of Ubuntu I go for Ubuntu Gnome. Install it in it's own partition, just makes some things easier.
+I would recommend some form of Ubuntu I go for Ubuntu Gnome. Install it in its own partition, just makes some things easier.
 
 ## Install Nvidia Driver
+Note: This is not possible if your main graphics driver is not NVIDIA
 1. Download [Nvidia Driver](http://www.nvidia.com/object/unix.html)
 2. `sudo sh <DRIVER FILE NAME HERE>`
 3. reboot
@@ -14,6 +19,7 @@ I would recommend some form of Ubuntu I go for Ubuntu Gnome. Install it in it's 
 [link](http://askubuntu.com/questions/451221/ubuntu-14-04-install-nvidia-driver) for when this fails 
 
 ## Install Cuda
+Note: Do not do these steps if you cannot install the NVIDIA driver
 1. [Downoad Cuda](https://developer.nvidia.com/cuda-toolkit) at the time of writing we are using 8 so get that
 2. run 
 ```
@@ -44,6 +50,14 @@ install older version: `sudo apt-get install gcc-4.9 g++-4.9`
 create a link to cuda installation: `sudo ln -s /usr/bin/gcc-4.9 /usr/local/cuda/bin/gcc` and repeat with `g++` instead of `gcc`
 
 ## Install OpenCV
+Note: Everyone can do this step, regardless of CUDA being installed or not.
+1. Go to this link [Installing openCV](https://gist.github.com/arthurbeggs/06df46af94af7f261513934e56103b30/), dowload and run this shell script with
+```
+sudo sh ./install-opencv-2.4.13-in-ubuntu.sh
+```
+in whatever folder you saved the file.
+
+### Or you could do it the hard way
 1. make sure we got the required libraries
 ```
 sudo apt-get update
@@ -90,23 +104,43 @@ printf '# OpenCV\nPKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig\nexp
 source ~/.bashrc  
 ```
 
-6.Optional Thrust Library Fix
-Only do this if your compiliation failed on something about thrust was mentioned.
-
-1. Download Thrust 
-```
-mkdir thrust
-cd thrust
-git clone git@github.com:thrust/thrust.git
-```
-2.Replace Cuda Thrust
-```
-sudo rm -rf /usr/local/cuda-8.0/include/thrust
-cd thrust 
-sudo cp thrust /usr/local/cuda-8.0/include/
-```
-3.try the compilation again
-
 if this worked then go you!!!
 
 if not meet your new best [friend](https://google.com)
+
+# What is CUDA, and Do I Need It?
+In a few words, CUDA is a language that allows your program to run on a GPU, rather than the CPU. This gives you crazy good performance on certain things, especially image processing. When doing development, you will find that CUDA looks suspiciously like C++, and you'd be right. CUDA runs just like a C++ program would on your CPU, except on your GPU. As you will see soon, the code looks almost identical.
+
+# What to Do if I can't use CUDA?
+Either because of an incompatible graphics card, or any other reason? No worries. Code written for the CPU will compile and execute the same commands as it would on a GPU. So just go ahead and write all you code so it's CPU friendly, aka in plain C++. Take a look at these snippets from gpu_circle_video.cpp and cpu_circle_video.cpp
+
+From gpu_circle_video.cpp
+```
+	gpu::GpuMat tempFrame, tempGrey, tempEdges;
+	
+	//Creating a Mat version of the current frame
+	tempFrame.upload(cvarrToMat(frame));
+	tempGrey.upload(cvarrToMat(grey));
+	tempEdges.upload(cvarrToMat(edges));
+
+	/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
+           Uses two threshold and a aperture parameter for Sobel operator. */
+    	gpu::cvtColor(tempFrame, tempGrey, CV_BGR2GRAY);
+```
+
+From cpu_circle_video.cpp
+```
+	Mat tempFrame, tempGrey, tempEdges;
+	
+	//Creating a Mat version of the current frame
+	cvarrToMat(frame).copyTo(tempFrame);
+	cvarrToMat(grey).copyTo(tempGrey);
+	cvarrToMat(edges).copyTo(tempEdges);
+	
+
+	/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
+           Uses two threshold and a aperture parameter for Sobel operator. */
+        cvtColor(tempFrame, tempGrey, CV_BGR2GRAY);
+```
+
+As you can see, the only difference between these two is the way that objects are referenced. In the GPU file, we need to upload the images to a gpu matrix, while in the CPU file we copy the images to a CPU matrix. In order to make GPU-running code compatible with the CPU, you just have to replace references to GPU objects. Other than this, all processing logic should be the same.
