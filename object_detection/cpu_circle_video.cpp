@@ -1,13 +1,14 @@
 using namespace std;
 #include <stdio.h>
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/core/core.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include "../utilities/FrameRateMonitor.h"
 
 using namespace cv;
 int main(int argc, char *argv[]) {
     int delay = 0, key=0, i=0, counter=0;
-    
+    FrameRateMonitor frm;	    
     char *window_name;
     CvCapture *video = NULL;
     IplImage  *frame = NULL;
@@ -15,7 +16,6 @@ int main(int argc, char *argv[]) {
     IplImage  *edges = NULL;
 	int threshold_value=50, threshold_type=2;
 	int const max_BINARY_value = 255;
-
  
     /* check for video file passed by command line */
     if (argc>1) {
@@ -42,14 +42,14 @@ int main(int argc, char *argv[]) {
  
     /* calculate the delay between each frame and display video's FPS */
     delay = (int) (1000/cvGetCaptureProperty(video, CV_CAP_PROP_FPS));
-
+    frm.Start();
     int frmCounter = 0;
     while (frame) {
 	frmCounter++;
 	if(frmCounter%4 == 0){
 		continue;
 	}
-        //frm.MarkFrame();  
+        frm.MarkFrame();  
 	vector<Vec3f> circles;  
 	Mat tempFrame, tempGrey, tempEdges;
 	
@@ -83,14 +83,19 @@ int main(int argc, char *argv[]) {
        	imshow(window_name, e);
 	
 	/* load and check next frame*/
+        frm.DumpInfo();
         frame = cvQueryFrame(video);
 	if(!frame) {
 	    printf("error loading frame.\n");
-		return 1;
+	    frm.Stop();
+  	    frm.DumpInfo();	
+            return 1;
 	}
  
 	/* wait delay and check for the quit key */
         key = cvWaitKey(delay);
         if(key=='q') break;
     }
+    frm.Stop();
+    frm.DumpInfo();
 }
