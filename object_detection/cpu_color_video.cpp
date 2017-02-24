@@ -16,8 +16,12 @@ int main(int argc, char *argv[]) {
     IplImage  *blobs = NULL;
 	int threshold_value=50, threshold_type=2;
 	int const max_BINARY_value = 255;
+   Point2f Com = Point2f (0,0);
+   float X = 0;
+   float Y = 0;
+   double xsize = 0;
+   double ysize = 0; 
 
- 
     /* check for video file passed by command line */
     if (argc>1) {
         video = cvCaptureFromFile(argv[1]);
@@ -83,11 +87,56 @@ int main(int argc, char *argv[]) {
  //     Scalar color = Scalar( 0,255,255);
  //     drawContours( redBlobs, redContours, i, color, 2, 8, rHierarchy, 0, Point() );
  //   }
+   
+     // drawContours( greenBlobs, greenContours, i, color, 2, 8, gHierarchy, 0, Point() );
+
+ /// Get the moments
+  vector<Moments> mu(greenContours.size() );
+  for( int i = 0; i < greenContours.size(); i++ )
+     { mu[i] = moments( greenContours[i], false ); }
+
+///  Get the mass centers:
+  vector<Point2f> mc( greenContours.size() );
+  for( int i = 0; i < greenContours.size(); i++ )
+     { mc[i] = Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); }
+
+	xsize=0;
+
     for( int i = 0; i< greenContours.size(); i++ )
-    {
-       Scalar color = Scalar( 120,255,255 );
-      drawContours( greenBlobs, greenContours, i, color, 2, 8, gHierarchy, 0, Point() );
-    }
+{
+	if(!isnan(mc[i].x)){
+		X+=mc[i].x;
+		xsize++;
+	}
+}
+//xsize/=3.0;
+X/=xsize;
+
+
+	ysize=0;
+
+    for( int i = 0; i< greenContours.size(); i++ )
+{
+	if(!isnan(mc[i].y)){
+		Y+=mc[i].y;
+		ysize++;
+	}
+}
+//ysize/=3.0;
+Y/=ysize;
+
+
+ Com =Point2f(X,Y);
+
+printf("%f %f\n",xsize,ysize);
+
+
+    for( int i = 0; i< greenContours.size(); i++ )
+{
+	       Scalar color = Scalar( 120,255,255 );
+		circle( greenBlobs, Com, 4, color, -1, 8, 0 );
+}
+
  	Mat disp;
  	bitwise_or(greenBlobs, redBlobs, disp);
 	
