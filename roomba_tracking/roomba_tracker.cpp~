@@ -1,5 +1,0 @@
-class tracking_confidence {
-	public:
-		double angleOfConfidence;
-}
-
