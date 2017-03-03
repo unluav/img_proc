@@ -1,5 +1,6 @@
 using namespace std;
 #include <stdio.h>
+#include <iostream>
 #include <map>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -45,11 +46,63 @@ int main(int argc, char *argv[]) {
     
     Mat tempFrame, redBlobs1, redBlobs2,greenBlobs;			//these are boolean matrices ... redBlobs2 is because we have to deal with red twice due to the color spectrum linear scale
     int frmCounter = 0;
+    double speedMultiplier = 1;
+    bool reverse = false;
+ 
     while (frame) {
-	frmCounter++;
-	if(frmCounter%3 == 0){
-		continue;
+	/*Process key comands*/ 
+        key = cvWaitKey(10)%256;
+	switch(key) {
+		/*quit*/
+		case 'q':
+			printf("Exiting...\n");
+			return 0;
+		/*STOP. hammer time*/
+		case ' ':
+			printf("Paused, press 'p' to resume playback.\n");
+			while(cvWaitKey(1)%256 != 'p');
+			break;
+		/*harder, better, FASTER, stronger*/
+		case 'f':
+			speedMultiplier *= 2;
+			printf("Current multiplier: %.2fx\n", speedMultiplier);
+			break;
+		/*slower*/
+		case 's':
+			speedMultiplier = (speedMultiplier * .5 >= 1) ? speedMultiplier * .5 : 1;
+			printf("Current multiplier: %.2fx\n", speedMultiplier);
+			if (speedMultiplier == 0)
+				speedMultiplier = 1;
+			break;
+		/*reverse reverse (everybody clap your hands)*/
+		case 'r':
+			if (reverse)
+				printf("Reverse, reverse! (Forward)\n");
+			else
+				printf("Reverse, reverse! (Backward)\n");
+			reverse = !reverse;
+			break;
 	}
+
+	cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" << int(cvGetCaptureProperty(video,CV_CAP_PROP_POS_MSEC) ) << "ms\r";
+	cout.flush();
+
+	frmCounter++;
+	if (!reverse) {
+		if(frmCounter%(int)speedMultiplier != 0){
+        		frame = cvQueryFrame(video);
+			continue;
+		}
+	} else {
+		if(frmCounter%(int)speedMultiplier != 0) {
+			double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) - 2;
+			if (fNum < 0)
+				fNum = 0;
+			cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
+			frame = cvQueryFrame(video);
+		}
+	}
+
         //frm.MarkFrame();  //Daric's frame counter -- check gpu canny edge
 	vector<vector<Point> > redContours; 		//vector is a list in c#
 	vector<vector<Point> > greenContours;
@@ -65,29 +118,31 @@ int main(int argc, char *argv[]) {
 
 	/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
            Uses two threshold and a aperture parameter for Sobel operator. */
-    cvtColor(tempFrame, redBlobs1, CV_BGR2HSV);		//copies tempFrame into redBlobs with color for edge detection
-    cvtColor(tempFrame, redBlobs2, CV_BGR2HSV);		//color filters
+    	cvtColor(tempFrame, redBlobs1, CV_BGR2HSV);	//copies tempFrame into redBlobs with color for edge detection
+    	cvtColor(tempFrame, redBlobs2, CV_BGR2HSV);	//color filters
  	cvtColor(tempFrame, greenBlobs, CV_BGR2HSV);
  
 	/*Finding the color blobs (needs to be a colored image) using Inrange*/
 	inRange(redBlobs1, Scalar(160,80,80), Scalar(179,255,255),redBlobs1);
 	inRange(redBlobs2, Scalar(0,80,80), Scalar(10,255,255),redBlobs2);
+	
 	Mat redBlobs;
 	bitwise_or(redBlobs1, redBlobs2, redBlobs);
 	inRange(greenBlobs, Scalar(40,80,80), Scalar(80,255,255), greenBlobs);
-// 	findContours(redBlobs, redContours, rHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	// 	findContours(redBlobs, redContours, rHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
  	findContours(greenBlobs, greenContours, gHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
  	
-// 	for( int i = 0; i< redContours.size(); i++ )
- //   {
- //     Scalar color = Scalar( 0,255,255);
- //     drawContours( redBlobs, redContours, i, color, 2, 8, rHierarchy, 0, Point() );
- //   }
-    for( int i = 0; i< greenContours.size(); i++ )
-    {
-       Scalar color = Scalar( 120,255,255 );
-      drawContours( greenBlobs, greenContours, i, color, 2, 8, gHierarchy, 0, Point() );		//instead of using i, we could use -1, which would draw them all
-    }
+	// 	for( int i = 0; i< redContours.size(); i++ )
+ 	//   {
+ 	//     Scalar color = Scalar( 0,255,255);
+ 	//     drawContours( redBlobs, redContours, i, color, 2, 8, rHierarchy, 0, Point() );
+ 	//   }
+    	for( int i = 0; i< greenContours.size(); i++ )
+    	{
+       		Scalar color = Scalar( 120,255,255 );
+		//instead of using i, we could use -1, which would draw them all
+		drawContours( greenBlobs, greenContours, i, color, 2, 8, gHierarchy, 0, Point() );
+    	}
  	Mat disp;
  	bitwise_or(greenBlobs, redBlobs, disp);
 	
@@ -95,20 +150,20 @@ int main(int argc, char *argv[]) {
        	imshow(window_name, disp);
 	
 	/* load and check next frame*/
-        frame = cvQueryFrame(video);
+	if (!reverse)
+        	frame = cvQueryFrame(video);
+	else {
+		double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) - 2;
+		if (fNum < 0)
+			fNum = 0;
+		cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
+		frame = cvQueryFrame(video);
+	} 
 	if(!frame) {
 	    printf("error loading frame.\n");
 		return 1;
 	}
- 
-	/* wait delay and check for the quit key */
-        key = cvWaitKey(delay);
-        if(key=='q'){
-		break;
-		printf("HERGEDY BLERGEDY YOU PRESSED Q\n");
-	}else {
-		printf("hi");
-	}
-	printf("hi");
+		
     }
+	return 0;
 }
