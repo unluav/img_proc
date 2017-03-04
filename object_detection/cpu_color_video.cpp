@@ -40,11 +40,12 @@ int main(int argc, char *argv[]) {
     /* Get the first frame and create a edges image with the same size */
     frame = cvQueryFrame(video);
     //grey  = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
-    blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);			//empty image of the same size of the frame. this is where we store info from processing the frame
+    blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);			
     /* calculate the delay between each frame and display video's FPS */
     delay = (int) (1000/cvGetCaptureProperty(video, CV_CAP_PROP_FPS));
-    
-    Mat tempFrame, redBlobs1, redBlobs2,greenBlobs;			//these are boolean matrices ... redBlobs2 is because we have to deal with red twice due to the color spectrum linear scale
+   
+    /*these are boolean matrices ... redBlobs2 is because we have to deal with red twice due to the color spectrum linear scale*/	 
+    Mat tempFrame, redBlobs1, redBlobs2,greenBlobs;			
     int frmCounter = 0;
     double speedMultiplier = 1;
     bool reverse = false;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
 	/*Process key comands*/ 
         key = cvWaitKey(10)%256;
 	switch(key) {
-		/*quit*/
+		/*in the END, it doesn't even matter...*/
 		case 'q':
 			printf("Exiting...\n");
 			return 0;
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
 			speedMultiplier *= 2;
 			printf("Current multiplier: %.2fx\n", speedMultiplier);
 			break;
-		/*slower*/
+		/*some song with SLOW in the lyrics*/
 		case 's':
 			speedMultiplier = (speedMultiplier * .5 >= 1) ? speedMultiplier * .5 : 1;
 			printf("Current multiplier: %.2fx\n", speedMultiplier);
@@ -90,7 +91,10 @@ int main(int argc, char *argv[]) {
 	frmCounter++;
 	if (!reverse) {
 		if(frmCounter%(int)speedMultiplier != 0){
-        		frame = cvQueryFrame(video);
+        		double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + 1 ;
+			if (fNum < 0)
+				fNum = 0;
+			cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
 			continue;
 		}
 	} else {
@@ -99,7 +103,7 @@ int main(int argc, char *argv[]) {
 			if (fNum < 0)
 				fNum = 0;
 			cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
-			frame = cvQueryFrame(video);
+			continue;
 		}
 	}
 
