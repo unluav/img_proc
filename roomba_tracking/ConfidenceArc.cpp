@@ -2,11 +2,15 @@
 #include <math.h>
 #include <iostream>
 
+ConfidenceArc::getPredictedPoint() {
+
+}
+
 ConfidenceArc::ConfidenceArc(cv::Point2f p1, cv::Point2f p2, double thetaError, double distanceError) {
 	this->previous = p1;
 	this->current = p2;
-	this->thetaError = thetaError;
-	this->distanceError = distanceError;
+	this->thetaError = fabs(thetaError);
+	this->distanceError = fabs(distanceError);
 }
 
 double ConfidenceArc::getThetaError() {
@@ -20,7 +24,7 @@ double ConfidenceArc::getDistanceError() {
 double ConfidenceArc::getTheta() {
 	double x = this->current.x - this->previous.x;
 	double y = this->current.y - this->previous.y;
-	return abs(atan2(y, x));
+	return (x == 0) ? 0 : fabs(atan2(y, x));
 }
 
 double ConfidenceArc::getDistance() {
@@ -39,15 +43,15 @@ double ConfidenceArc::getTotalError() {
 }
 
 double ConfidenceArc::getThetaConfidence() {
-	std::cout << this->thetaError << " " << this->getTheta() << std::endl;
-	return this->thetaError / this->getTheta();
+	double theta = this->getTheta();
+	return (theta == 0) ? 0 : this->thetaError / theta;
 }
 
 double ConfidenceArc::getDistanceConfidence() {
 	return this->distanceError / this->getDistance();
 }
 
-double ConfidenceArc::getTotalConfidence() {
+double ConfidenceArc::getConfidence() {
 	double outerRadius = this->getDistance() + this->distanceError;
 	double outerArea = M_PI * outerRadius * outerRadius;
 	return this->getTotalError() / outerArea;
