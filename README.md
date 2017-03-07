@@ -1,11 +1,15 @@
 # img_processing
 we take images and then process them
 # Table of Contents
-### 1)Environment Setup
-### 2)What is CUDA, and Do I Need It?
-### 3)What to Do if I Can't Use CUDA
+### 1)Getting Started
+### 2)Environment Setup
+### 3)What is CUDA, and Do I Need It?
+### 4)What to Do if I Can't Use CUDA
 
-# 1)Enviornment Setup
+# Getting Started
+If you just want to get started working, ignore the rest of this readme and contact team leadership about getting an account on our brand-new dev server! This means you don't need to do anything but ssh in and start working. If you want to set up your own development environment so you can work when offline, continue reading.
+
+# Enviornment Setup
 ## Install Linux
 I would recommend some form of Ubuntu I go for Ubuntu Gnome. Install it in its own partition, just makes some things easier.
 
