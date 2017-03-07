@@ -1,29 +1,42 @@
 #include <iostream>
 #include <string>
-#include <math.h>
 #include "ConfidenceArc.hpp"
+#include <utility>
 
 int main() {
-	double distanceError, thetaError;
-	cv::Point2f predicted(0.f, 0.f), previous(0.f, 0.f);
+	std::vector<cv::Point2f> path;
+	std::vector<double> distanceErrors;
+	std::vector<double> angleErrors;
+	cv::Point2f previous(0.0, 0.0);
+	cv::Point2f current;
+	Prediction prediction;
+	std::pair<double, double> distanceStats = std::make_pair(0.0, 0.0);
+	std::pair<double, double> angleStats = std::make_pair(0.0, 0.0);
+	
+	std::cout << "Iterations: ";
+	int cap;
+	std::cin >> cap;
 
-	for (int i = 0; i < 10; i++) {
-		float x = i + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.1));
-		float y = i + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.1));
-		cv::Point2f current(x, y);
-		distanceError = sqrt(pow(current.x - predicted.x, 2) + pow(current.y - predicted.y, 2));
-		thetaError = atan2(current.y, current.x) - atan2(predicted.y, predicted.y);
-		ConfidenceArc arc(previous, current, thetaError, distanceError);
-		std::cout << thetaError << " " << distanceError << std::endl;
-		std::cout << "Theta Confidence: " << arc.getThetaConfidence() << std::endl;
-		std::cout << "Distance Confidence: " << arc.getDistanceConfidence() << std::endl << std::endl;
+	for (int i = 0; i < cap; i++) {
+		current.x = i + (double) rand() / RAND_MAX;
+		current.y = i + (double) rand() / RAND_MAX;
+
+		path.push_back(previous);
+		ConfidenceArc::getPredictedPoint(previous, current,
+			&distanceStats, &angleStats,
+			&distanceErrors, &angleErrors, &prediction);
+
+		std::cout << i << std::endl;
+		std::cout << "(" << previous.x << ", " << previous.y << ") -> ";
+		std::cout << "(" << current.x << ", " << current.y << ")" << std::endl;
+		std::cout << "Distance: " << prediction.distance << std::endl;
+		std::cout << "Angle: " << prediction.angle << std::endl;
+		std::cout << "Distance Error: " << prediction.distanceError << std::endl;
+		std::cout << "Angle Error: " << prediction.angleError << std::endl;
+		std::cout << "Confidence: " << ConfidenceArc::getConfidence(prediction.distance, prediction.distanceError, prediction.angleError);
+		std::cout << std::endl << std::endl << std::endl;
 		previous = current;
-		predicted = arc.predictPoint();
 	}
 
 	return 0;
-}
-
-void predictPoint(, cv::Point previous, cv::Point current, double thetaError, double distanceError) {
-	
 }

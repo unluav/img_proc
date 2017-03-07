@@ -1,65 +1,63 @@
 #include "ConfidenceArc.hpp"
 #include <math.h>
 #include <iostream>
+#include <random>
+#include <utility>
 
-ConfidenceArc::getPredictedPoint() {
+void ConfidenceArc::getPredictedPoint(cv::Point2f previous, cv::Point2f current,
+	std::pair<double, double>* distanceStats, std::pair<double, double>* angleStats,
+	std::vector<double>* distanceErrors, std::vector<double>* angleErrors, Prediction* prediction) {
 
+	std::default_random_engine generator;
+	std::normal_distribution<double> distanceDistribution(distanceStats->first, distanceStats->second);
+	std::normal_distribution<double> angleDistribution(angleStats->first, angleStats->second);
+
+	cv::Point2f difference = current - previous;
+	double distance = cv::norm(difference);
+	double angle = atan2(difference.y, difference.x);
+	double distanceError = fabs(distanceDistribution(generator));
+	double angleError = fabs(angleDistribution(generator));
+
+	distanceErrors->push_back(prediction->distance - distance);
+	angleErrors->push_back(prediction->angle - angle);
+
+	ConfidenceArc::getMeasurementError(distanceErrors, distanceStats);
+	ConfidenceArc::getMeasurementError(angleErrors, angleStats);
+
+	prediction->distance = distance;
+	prediction->angle = angle;
+	prediction->distanceError = distanceError;
+	prediction->angleError = angleError;
 }
 
-ConfidenceArc::ConfidenceArc(cv::Point2f p1, cv::Point2f p2, double thetaError, double distanceError) {
-	this->previous = p1;
-	this->current = p2;
-	this->thetaError = fabs(thetaError);
-	this->distanceError = fabs(distanceError);
+void ConfidenceArc::getMeasurementError(std::vector<double>* errors, std::pair<double, double>* measurement) {
+	measurement->first = 0;
+	for (int i = 1; i <= 10; i++) {
+		int index = errors->size() - i;
+		if (index < 0) break;
+		measurement->first += errors->at(index);
+	}
+
+	measurement->first = fabs(measurement->first) / errors->size();
+
+	double variance = 0;
+	for (int i = 1; i <= 10; i++) {
+		int index = errors->size() - i;
+		if (index < 0) break;
+		variance += pow(errors->at(index) - measurement->first, 2);
+	}
+
+	measurement->second = fabs(sqrt(variance / (errors->size() - 1)));
 }
 
-double ConfidenceArc::getThetaError() {
-	return this->thetaError;
-}
+double ConfidenceArc::getConfidence(double distance, double distanceError, double angleError) {
+	double outer = distance + distanceError;
+	double arcArea = 4 * angleError * distance * distanceError;
+	double circleArea = M_PI * outer * outer;
 
-double ConfidenceArc::getDistanceError() {
-	return this->distanceError;
-}
-
-double ConfidenceArc::getTheta() {
-	double x = this->current.x - this->previous.x;
-	double y = this->current.y - this->previous.y;
-	return (x == 0) ? 0 : fabs(atan2(y, x));
-}
-
-double ConfidenceArc::getDistance() {
-	double xComponent = pow(this->current.x - this->previous.x, 2);
-	double yComponent = pow(this->current.y - this->previous.y, 2);
-	return sqrt(xComponent + yComponent);
-}
-
-double ConfidenceArc::getTotalError() {	
-	double distance = this->getDistance();
-	double innerRadius = distance - this->distanceError;
-	double outerRadius = distance + this->distanceError;
-	double innerArea = M_PI * innerRadius * innerRadius;
-	double outerArea = M_PI * outerRadius * outerRadius;
-	return (outerArea - innerArea) * this->getTheta() / (M_PI * 2);
-}
-
-double ConfidenceArc::getThetaConfidence() {
-	double theta = this->getTheta();
-	return (theta == 0) ? 0 : this->thetaError / theta;
-}
-
-double ConfidenceArc::getDistanceConfidence() {
-	return this->distanceError / this->getDistance();
-}
-
-double ConfidenceArc::getConfidence() {
-	double outerRadius = this->getDistance() + this->distanceError;
-	double outerArea = M_PI * outerRadius * outerRadius;
-	return this->getTotalError() / outerArea;
-}
-
-cv::Point2f ConfidenceArc::predictPoint() {
-	double x = 2 * this->current.x - this->previous.x;
-	double y = 2 * this->current.y - this->previous.y;
-	cv::Point2f predictedPoint(x, y);
-	return predictedPoint;
+	if (outer == 0) return 0;
+	else if (distanceError == 0 && angleError != 0) return 1 - angleError / M_PI;
+	else if (distance < distanceError) return -1;
+	else if (angleError == 0) return 1 - 2 * distanceError / outer;
+	else return 1 - arcArea / circleArea;
 }

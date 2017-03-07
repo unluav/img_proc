@@ -2,23 +2,25 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <iostream>
-#include <cmath>
+#include <queue>
+#include <utility>
+
+struct Prediction {
+	double distance, angle, distanceError, angleError;
+
+	Prediction() {
+		distance = 0;
+		angle = 0;
+		distanceError = 0;
+		angleError = 0;
+	}
+};
 
 class ConfidenceArc {
 	public:
-		ConfidenceArc(cv::Point2f p1, cv::Point2f p2, double thetaError, double distanceError);
-		double getTheta();
-		double getDistance();
-		double getThetaError();
-		double getDistanceError();
-		double getTotalError();
-		double getThetaConfidence();
-		double getDistanceConfidence();
-		double getTotalConfidence();
-		cv::Point2f predictPoint();
-		
-	private:
-		cv::Point2f previous, current;
-		double thetaError, distanceError;
+		static void getPredictedPoint(cv::Point2f previous, cv::Point2f current,
+			std::pair<double, double>* distanceStats, std::pair<double, double>* angleStats,
+			std::vector<double>* distanceErrors, std::vector<double>* angleErrors, Prediction* prediction);
+		static void getMeasurementError(std::vector<double>* errors, std::pair<double, double>* measurement);
+		static double getConfidence(double distance, double distanceError, double angleError);
 };
