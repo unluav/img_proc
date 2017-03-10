@@ -1,4 +1,4 @@
-#include "videoPlayer.h"
+#include "videoPlayer.hpp"
 
 VideoPlayer::VideoPlayer(IFilter *_filter, std::string *_videoName, std::string *_windowName){
 

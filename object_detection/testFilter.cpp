@@ -1,4 +1,4 @@
-#include "filters.h"
+#include "filters.hpp"
 
 	cv::Mat TestFilter::processFrame(cv::Mat& frame) {
 

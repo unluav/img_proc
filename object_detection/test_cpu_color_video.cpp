@@ -4,8 +4,8 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
-#include "filters.h"
-#include "videoPlayer.h"
+#include "filters.hpp"
+#include "videoPlayer.hpp"
 
 int main(int argc, char *argv[]){
 

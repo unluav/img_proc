@@ -1,6 +1,6 @@
 #pragma once
 
-#include "iFilter.h"
+#include "iFilter.hpp"
 
 class TestFilter : public IFilter
 {
