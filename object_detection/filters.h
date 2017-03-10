@@ -2,9 +2,8 @@
 
 #include "iFilter.h"
 
-using namespace cv; //TODO make this go away
 class TestFilter : public IFilter
 {
 public:
-	virtual cv::Mat processFrame(Mat& frame);
+	virtual cv::Mat processFrame(cv::Mat& frame);
 };

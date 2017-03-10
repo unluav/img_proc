@@ -1,4 +1,3 @@
-using namespace std;
 #include <stdio.h>
 #include <iostream>
 #include <map>
@@ -8,7 +7,6 @@ using namespace std;
 #include "filters.h"
 #include "videoPlayer.h"
 
-using namespace cv;
 int main(int argc, char *argv[]){
 
 	if(argc < 2){
@@ -19,7 +17,7 @@ int main(int argc, char *argv[]){
 
 	TestFilter *filter = new TestFilter();
 
-	string *fileName = new string(argv[1]);
+	std::string *fileName = new std::string(argv[1]);
 
 	VideoPlayer *player = new VideoPlayer(filter, fileName, fileName);
 

@@ -1,6 +1,6 @@
 #include "videoPlayer.h"
 
-VideoPlayer::VideoPlayer(IFilter *_filter, string *_videoName, string *_windowName){
+VideoPlayer::VideoPlayer(IFilter *_filter, std::string *_videoName, std::string *_windowName){
 
 	if(_filter == NULL){
 		throw std::invalid_argument("\n\n\nBAD FILTER\n\n\n");
@@ -15,7 +15,7 @@ VideoPlayer::VideoPlayer(IFilter *_filter, string *_videoName, string *_windowNa
 	videoName = _videoName;
 	windowName = _windowName;
 
-        video = new VideoCapture(*videoName);
+        video = new cv::VideoCapture(*videoName);
 
         /* check file was correctly opened */
         if (!video->isOpened()) {
@@ -27,10 +27,10 @@ VideoPlayer::VideoPlayer(IFilter *_filter, string *_videoName, string *_windowNa
 
 void VideoPlayer::play(){
 
-	Mat frame;
+	cv::Mat frame;
 	bool hasNext = video->read(frame);
 
-        namedWindow(*windowName, 1);
+        cv::namedWindow(*windowName, 1);
 
 	int frmCounter = 0;
 	double speedMultiplier = 1;
@@ -71,8 +71,8 @@ void VideoPlayer::play(){
 				break;
 		}	
 
-		cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" << video->get(CV_CAP_PROP_POS_MSEC)  << "ms\r";
-		cout.flush();
+		std::cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" << video->get(CV_CAP_PROP_POS_MSEC)  << "ms\r";
+		std::cout.flush();
 
 		frmCounter++;
 		if (!reverse) {
@@ -93,10 +93,10 @@ void VideoPlayer::play(){
 			}
 		}
 
-		Mat disp = filter->processFrame(frame);
+		cv::Mat disp = filter->processFrame(frame);
 
 		// show loaded frame 
-		imshow(*windowName, disp);
+		cv::imshow(*windowName, disp);
 
 		// load and check next frame
 		if (!reverse)
