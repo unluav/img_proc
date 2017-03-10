@@ -17,11 +17,15 @@ int main(int argc, char *argv[]) {
 	int threshold_value=50, threshold_type=2;
 	int const max_BINARY_value = 255;
    Point2f Com = Point2f (0,0);
-   float X = 0;
-   float Y = 0;
-   double xsize = 0;
-   double ysize = 0; 
 
+  	float X = 0;
+  	float Y = 0;
+  	double xsize = 0;
+	double ysize = 0; 
+	Point2f TempCom1 = Point2f (0,0);
+	Point2f TempCom2 = Point2f (0,0);
+	Point2f TempCom3 = Point2f (0,0);
+	int numtimes = 0;
     /* check for video file passed by command line */
     if (argc>1) {
         video = cvCaptureFromFile(argv[1]);
@@ -44,6 +48,7 @@ int main(int argc, char *argv[]) {
     frame = cvQueryFrame(video);
     //grey  = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
     blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
+
     /* calculate the delay between each frame and display video's FPS */
     delay = (int) (1000/cvGetCaptureProperty(video, CV_CAP_PROP_FPS));
     
@@ -65,7 +70,7 @@ int main(int argc, char *argv[]) {
 	cvarrToMat(blobs).copyTo(redBlobs1);
 	cvarrToMat(blobs).copyTo(redBlobs2);
 	cvarrToMat(blobs).copyTo(greenBlobs);
-	
+	blur(tempFrame, tempFrame, Size(3,3) );	
 
 	/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
            Uses two threshold and a aperture parameter for Sobel operator. */
@@ -79,66 +84,72 @@ int main(int argc, char *argv[]) {
 	Mat redBlobs;
 	bitwise_or(redBlobs1, redBlobs2, redBlobs);
 	inRange(greenBlobs, Scalar(40,80,80), Scalar(80,255,255), greenBlobs);
-// 	findContours(redBlobs, redContours, rHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+ 	findContours(redBlobs, redContours, rHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
  	findContours(greenBlobs, greenContours, gHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
  	
 // 	for( int i = 0; i< redContours.size(); i++ )
- //   {
- //     Scalar color = Scalar( 0,255,255);
- //     drawContours( redBlobs, redContours, i, color, 2, 8, rHierarchy, 0, Point() );
- //   }
+  //  {
+    //  Scalar color = Scalar( 0,255,255);
+     // drawContours( redBlobs, redContours, i, color, 2, 8, rHierarchy, 0, Point() );
+   // }
    
      // drawContours( greenBlobs, greenContours, i, color, 2, 8, gHierarchy, 0, Point() );
 
- /// Get the moments
-  vector<Moments> mu(greenContours.size() );
-  for( int i = 0; i < greenContours.size(); i++ )
-     { mu[i] = moments( greenContours[i], false ); }
 
-///  Get the mass centers:
-  vector<Point2f> mc( greenContours.size() );
-  for( int i = 0; i < greenContours.size(); i++ )
-     { mc[i] = Point2f( mu[i].m10/mu[i].m00 , mu[i].m01/mu[i].m00 ); }
 
-	xsize=0;
 
-    for( int i = 0; i< greenContours.size(); i++ )
-{
-	if(!isnan(mc[i].x)){
-		X+=mc[i].x;
-		xsize++;
+vector<vector<Point> > contours_poly(greenContours.size());
+vector<vector<Point> > contours_poly2(redContours.size());
+vector<Point2f>center(greenContours.size());
+vector<Point2f>center2(redContours.size());
+vector<float>radius(greenContours.size());
+vector<float>radius2(redContours.size());
+for(int i = 0;i<redContours.size();i++){
+	approxPolyDP( Mat(redContours[i]),contours_poly2[i],3,true);
+	minEnclosingCircle( (Mat)contours_poly2[i],center2[i],radius2[i]);
+}
+for(int i = 0;i<greenContours.size();i++){
+	approxPolyDP( Mat(greenContours[i]),contours_poly[i],3,true);
+	minEnclosingCircle( (Mat)contours_poly[i],center[i],radius[i]);
+}
+
+Mat drawing = Mat::zeros( greenBlobs.size(),CV_8UC3);
+Mat drawing2 = Mat::zeros( greenBlobs.size(),CV_8UC3);
+float maxRadius=0;
+float maxRadius2=0;
+int max=0;
+int max2=0;
+for(int i=0;i<redContours.size();i++){
+	if(radius2[i]>maxRadius2){
+		maxRadius2=radius2[i];
+		max2=i;
 	}
 }
-//xsize/=3.0;
-X/=xsize;
-
-
-	ysize=0;
-
-    for( int i = 0; i< greenContours.size(); i++ )
-{
-	if(!isnan(mc[i].y)){
-		Y+=mc[i].y;
-		ysize++;
+for(int i=0;i<greenContours.size();i++){
+	if(radius[i]>maxRadius){
+		maxRadius=radius[i];
+		max=i;
 	}
 }
-//ysize/=3.0;
-Y/=ysize;
-
-
- Com =Point2f(X,Y);
-
-printf("%f %f\n",xsize,ysize);
-
-
-    for( int i = 0; i< greenContours.size(); i++ )
-{
-	       Scalar color = Scalar( 120,255,255 );
-		circle( greenBlobs, Com, 4, color, -1, 8, 0 );
+for(int i=0;i<redContours.size();i++){
+	Scalar color = Scalar (0,0,255);
+	drawContours( drawing2, contours_poly2 ,i, color,1,8,vector<Vec4i>(),0,Point() );
+	if(radius2[i]>=maxRadius/2){
+		circle(drawing2, center2[i], (int)radius2[i], color,2,8,0);
+	}
 }
+for(int i=0;i<greenContours.size();i++){
+	Scalar color = Scalar( 0,255,0);
+	drawContours( drawing, contours_poly, i,color,1,8,vector<Vec4i>(),0,Point() );
+	if(radius[i]>=maxRadius/2){
+		circle(drawing, center[i], (int)radius[i], color,2,8,0);
+	}
+}
+
+
 
  	Mat disp;
- 	bitwise_or(greenBlobs, redBlobs, disp);
+ 	bitwise_or(drawing, drawing2, disp);
 	
 	/* show loaded frame */
        	imshow(window_name, disp);
