@@ -6,21 +6,21 @@
 #include <utility>
 
 struct Prediction {
-	double distance, angle, distanceError, angleError;
+	double dist, angle, distError, angleError;
 
 	Prediction() {
-		distance = 0;
+		dist = 0;
 		angle = 0;
-		distanceError = 0;
+		distError = 0;
 		angleError = 0;
 	}
 };
 
 class ConfidenceArc {
 	public:
-		static void getPredictedPoint(cv::Point2f previous, cv::Point2f current,
-			std::pair<double, double>* distanceStats, std::pair<double, double>* angleStats,
-			std::vector<double>* distanceErrors, std::vector<double>* angleErrors, Prediction* prediction);
-		static void getMeasurementError(std::vector<double>* errors, std::pair<double, double>* measurement);
+		static void predictPoint(cv::Point2f prev, cv::Point2f curr,
+			std::pair<double, double>* distStats, std::pair<double, double>* angleStats,
+			std::vector<double>* distErrors, std::vector<double>* angleErrors, Prediction* prediction);
+		static void getErrorStats(std::vector<double>* errors, std::pair<double, double>* unit, int cap);
 		static double getConfidence(double distance, double distanceError, double angleError);
 };
