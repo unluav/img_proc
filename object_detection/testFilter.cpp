@@ -1,17 +1,13 @@
-#include "testFilter.h"
+#include "filters.h"
 
 using namespace cv; //  TODO: Stawp
 
-	Mat TestFilter::processFrame(IplImage *frame) {
+	Mat TestFilter::processFrame(Mat& frame) {
 
-		IplImage  *blobs = NULL;
 		int threshold_value=50, threshold_type=2;
 		int const max_BINARY_value = 255;
 
-
-		blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
-
-		Mat tempFrame, redBlobs1, redBlobs2,greenBlobs;	
+		Mat redBlobs1, redBlobs2, greenBlobs;
 
 		//frm.MarkFrame();  //Daric's frame counter -- check gpu canny edge
 		vector<vector<Point> > redContours; 		//vector is a list in c#
@@ -19,18 +15,12 @@ using namespace cv; //  TODO: Stawp
 		vector<Vec4i> rHierarchy;			//hierarchy?
 		vector<Vec4i> gHierarchy;
 
-		//Creating a Mat version of the current frame
-		cvarrToMat(frame).copyTo(tempFrame);		//copy the crrent frame into a temp frame that we can edit
-		cvarrToMat(blobs).copyTo(redBlobs1);		//initializes the matrices of certain size
-		cvarrToMat(blobs).copyTo(redBlobs2);
-		cvarrToMat(blobs).copyTo(greenBlobs);
-
 
 		/* Edges on the input gray image (needs to be grayscale) using the Canny algorithm.
 		Uses two threshold and a aperture parameter for Sobel operator. */
-		cvtColor(tempFrame, redBlobs1, CV_BGR2HSV);	//copies tempFrame into redBlobs with color for edge detection
-		cvtColor(tempFrame, redBlobs2, CV_BGR2HSV);	//color filters
-		cvtColor(tempFrame, greenBlobs, CV_BGR2HSV);
+		cvtColor(frame, redBlobs1, CV_BGR2HSV);	//copies tempFrame into redBlobs with color for edge detection
+		cvtColor(frame, redBlobs2, CV_BGR2HSV);	//color filters
+		cvtColor(frame, greenBlobs, CV_BGR2HSV);
  
 		/*Finding the color blobs (needs to be a colored image) using Inrange*/
 		inRange(redBlobs1, Scalar(160,80,80), Scalar(179,255,255),redBlobs1);

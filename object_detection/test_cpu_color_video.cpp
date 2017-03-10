@@ -5,7 +5,7 @@ using namespace std;
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
-#include "testFilter.h"
+#include "filters.h"
 #include "videoPlayer.h"
 
 using namespace cv;
@@ -19,7 +19,9 @@ int main(int argc, char *argv[]){
 
 	TestFilter *filter = new TestFilter();
 
-	VideoPlayer *player = new VideoPlayer(filter, argv[1], argv[1]);
+	string *fileName = new string(argv[1]);
+
+	VideoPlayer *player = new VideoPlayer(filter, fileName, fileName);
 
 	player->play(); 	
 

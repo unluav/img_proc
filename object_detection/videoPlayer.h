@@ -14,13 +14,13 @@ class VideoPlayer{
 
 	public:
 
-		VideoPlayer(IFilter *_filter, char *_videoName, char *_windowName);
+		VideoPlayer(IFilter *_filter, string *_videoName, string *_windowName);
 		void play();
 
 	private:
 
 		IFilter *filter;
-		char *videoName;
-		char *windowName;
-		CvCapture *video;
+		string *videoName;
+		string *windowName;
+		VideoCapture *video;
 };

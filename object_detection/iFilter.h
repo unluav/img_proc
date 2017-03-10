@@ -10,5 +10,5 @@ using namespace cv; //TODO: EW EW EW
 class IFilter {
 
 	public:
-		virtual cv::Mat processFrame(IplImage *frame) = 0;
+		virtual cv::Mat processFrame(Mat& frame) = 0;
 };
