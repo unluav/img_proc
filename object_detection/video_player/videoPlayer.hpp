@@ -1,4 +1,3 @@
-using namespace std;
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
@@ -6,21 +5,20 @@ using namespace std;
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
-#include "iFilter.h"
+#include "iFilter.hpp"
 
-using namespace cv;
 
 class VideoPlayer{
 
 	public:
 
-		VideoPlayer(IFilter *_filter, char *_videoName, char *_windowName);
+		VideoPlayer(IFilter *_filter, std::string *_videoName, std::string *_windowName);
 		void play();
 
 	private:
 
 		IFilter *filter;
-		char *videoName;
-		char *windowName;
-		CvCapture *video;
+		std::string *videoName;
+		std::string *windowName;
+		cv::VideoCapture *video;
 };
