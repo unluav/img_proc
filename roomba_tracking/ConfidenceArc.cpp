@@ -44,8 +44,15 @@ double ConfidenceArc::fetchConfidence(double distance, double distanceError, dou
 	distanceError += OFFSET;
 	angleError += OFFSET;
 
+//	std::cout << "distance := " << distance << std::endl;
+//	std::cout << "distanceError := " << distanceError << std::endl;
+//	std::cout << "angleError := " << angleError << std::endl;
+
 	double arcArea = 4 * angleError * distance * distanceError;
 	double circleArea = M_PI * pow(distance + distanceError, 2);
+
+//	std::cout << "arcArea := " << arcArea << std::endl;
+//	std::cout << "circleArea := " << circleArea << std::endl;
 
 	return 1 - arcArea / circleArea;
 }
@@ -78,4 +85,11 @@ void ConfidenceArc::recordError(cv::Point2f* previous, cv::Point2f* current, cv:
 
 	this->distanceErrors.push_back(fabs(cv::norm(predicted) - cv::norm(actual)));
 	this->angleErrors.push_back(fabs(atan2(predicted.y - actual.y, predicted.x - actual.x)));
+
+//	std::cout << "\n\nERRORS\n" << std::endl;
+//	std::cout << "Dist\tAngle" << std::endl;
+//	for (int i = 0; i < distanceErrors.size(); i++) {
+//		std::cout << distanceErrors.at(i) << "\t" << angleErrors.at(i) << std::endl;
+//	}
+//	std::cout << std::endl;
 }
