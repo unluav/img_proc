@@ -20,7 +20,7 @@ class ConfidenceArc {
 	public:
 		ConfidenceArc(cv::Point2f* previous, cv::Point2f* current);
 		void recordPoint(cv::Point2f* p);
-		std::vector<cv::Point2f> getPath();
+		std::vector<cv::Point2f>* getPath();
 		void predictPoint(Prediction* prediction, int length);
 		double fetchConfidence(double distance, double distanceError, double angleError);
 		std::pair<double, double> fetchDevAndMean(std::vector<double>* collection, int length);

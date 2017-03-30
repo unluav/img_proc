@@ -20,8 +20,8 @@ void ConfidenceArc::recordPoint(cv::Point2f* p) {
 	this->path.push_back(*p);
 }
 
-std::vector<cv::Point2f> ConfidenceArc::getPath() {
-	return this->path;
+std::vector<cv::Point2f>* ConfidenceArc::getPath() {
+	return &(this->path);
 }
 
 void ConfidenceArc::predictPoint(Prediction* prediction, int length) {

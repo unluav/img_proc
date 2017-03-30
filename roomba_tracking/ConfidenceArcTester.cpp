@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
 	cv::Point2f previous(0, 0);
 	cv::Point2f current(0, 0);
 	ConfidenceArc arc(&previous, &current);
+	std::vector<cv::Point2f>* path = arc.getPath();
 	
 	for (int i = 0; i < atoi(argv[1]); i++) {
 		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
@@ -27,9 +28,9 @@ int main(int argc, char** argv) {
 	}
 
 //	std::vector<cv::Point2f> path = arc.getPath();
-//	for (int i = 0; i < path.size(); i++) {
-//		printf("Pt: (%.3f, %.3f)\n", path.at(i).x, path.at(i).y);
-//	}	
+	for (int i = 0; i < path->size(); i++) {
+		printf("Pt: (%.3f, %.3f)\n", path->at(i).x, path->at(i).y);
+	}	
 
 	return 0;
 }
