@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < atoi(argv[1]); i++) {
 		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
 		current.y = i + (double) rand() / RAND_MAX * atof(argv[2]);
+		
 		arc.recordPoint(&current);
 		printStage(&previous, &current, &prediction);
 		arc.recordError(&previous, &current, &(prediction.point));
@@ -27,10 +28,13 @@ int main(int argc, char** argv) {
 		previous = current;
 	}
 
-//	std::vector<cv::Point2f> path = arc.getPath();
 	for (int i = 0; i < path->size(); i++) {
 		printf("Pt: (%.3f, %.3f)\n", path->at(i).x, path->at(i).y);
-	}	
+	}
+
+//Godzilla says I should learn to fight my own battles!!!!
+//"we're so heavy in code... mechanical engineers don't know code at all - Daric"
+//this is the ultimate showdown. of ultimate destiny. good guys bad guys and explosison. as far as the eye can see.	
 
 	return 0;
 }
