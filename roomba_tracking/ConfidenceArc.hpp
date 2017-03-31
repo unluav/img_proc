@@ -6,21 +6,28 @@
 #include <utility>
 
 struct Prediction {
-	double dist, angle, distError, angleError;
+	double confidence;
+	cv::Point2f point;
 
 	Prediction() {
-		dist = 0;
-		angle = 0;
-		distError = 0;
-		angleError = 0;
+		point.x = 0.0f;
+		point.y = 0.0f;
+		confidence = 0;
 	}
 };
 
 class ConfidenceArc {
 	public:
-		static void predictPoint(cv::Point2f prev, cv::Point2f curr,
-			std::pair<double, double>* distStats, std::pair<double, double>* angleStats,
-			std::vector<double>* distErrors, std::vector<double>* angleErrors, Prediction* prediction);
-		static void getErrorStats(std::vector<double>* errors, std::pair<double, double>* unit, int cap);
-		static double getConfidence(double distance, double distanceError, double angleError);
+		ConfidenceArc(cv::Point2f* previous, cv::Point2f* current);
+		void recordPoint(cv::Point2f* p);
+		std::vector<cv::Point2f>* getPath();
+		void predictPoint(Prediction* prediction, int length);
+		double fetchConfidence(double distance, double distanceError, double angleError);
+		std::pair<double, double> fetchDevAndMean(std::vector<double>* collection, int length);
+		double fetchError(std::pair<double, double>* stats);
+		void recordError(cv::Point2f* previous, cv::Point2f* current, cv::Point2f* prediction);
+
+	private:
+		std::vector<double> distanceErrors, angleErrors;
+		std::vector<cv::Point2f> path;
 };

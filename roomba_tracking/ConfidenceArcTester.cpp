@@ -1,47 +1,40 @@
 #include <iostream>
-#include <string>
+#include <iomanip>
 #include "ConfidenceArc.hpp"
-#include <utility>
+#include <random>
 
-void Print(cv::Point2f prev, cv::Point2f curr, Prediction prediction);
-
-int main() {
-	std::vector<cv::Point2f> path;
-	std::vector<double> distErrors;
-	std::vector<double> angleErrors;
-	cv::Point2f prev(0.0, 0.0);
-	cv::Point2f curr;
-	Prediction prediction;
-	std::pair<double, double> distStats = std::make_pair(0.0, 0.0);
-	std::pair<double, double> angleStats = std::make_pair(0.0, 0.0);
-	
-	std::cout << "Iterations: ";
-	int cap;
-	std::cin >> cap;
-
-	for (int i = 0; i < cap; i++) {
-		curr.x = i + (double) rand() / RAND_MAX;
-		curr.y = i + (double) rand() / RAND_MAX;
-
-		path.push_back(prev);
-		ConfidenceArc::predictPoint(prev, curr, &distStats, &angleStats, &distErrors, &angleErrors, &prediction);
-
-		std::cout << i << std::endl;
-		Print(prev, curr, prediction);
-
-		prev = curr;
-	}
-
-	return 0;
+void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* prediction) {
+	printf("\n\n\nPrevious: (%.3f, %.3f)\n", previous->x, previous->y);
+	printf("Current: (%.3f, %.3f)\n", current->x, current->y);
+	printf("Predicted Point: (%.3f, %.3f)\n", prediction->point.x, prediction->point.y);
+	printf("Confidence: %.3f\n", prediction->confidence);
 }
 
-void Print(cv::Point2f prev, cv::Point2f curr, Prediction prediction) {
-	std::cout << "(" << prev.x << ", " << prev.y << ") -> ";
-	std::cout << "(" << curr.x << ", " << curr.y << ")" << std::endl;
-	std::cout << "Distance: " << prediction.dist << std::endl;
-	std::cout << "Angle: " << prediction.angle << std::endl;
-	std::cout << "Distance Error: " << prediction.distError << std::endl;
-	std::cout << "Angle Error: " << prediction.angleError << std::endl;
-	std::cout << "Confidence: " << ConfidenceArc::getConfidence(prediction.dist, prediction.distError, prediction.angleError);
-	std::cout << std::endl << std::endl << std::endl;
+int main(int argc, char** argv) {
+	Prediction prediction;
+	cv::Point2f previous(0, 0);
+	cv::Point2f current(0, 0);
+	ConfidenceArc arc(&previous, &current);
+	std::vector<cv::Point2f>* path = arc.getPath();
+	
+	for (int i = 0; i < atoi(argv[1]); i++) {
+		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
+		current.y = i + (double) rand() / RAND_MAX * atof(argv[2]);
+		
+		arc.recordPoint(&current);
+		printStage(&previous, &current, &prediction);
+		arc.recordError(&previous, &current, &(prediction.point));
+		arc.predictPoint(&prediction, 10);
+		previous = current;
+	}
+
+	for (int i = 0; i < path->size(); i++) {
+		printf("Pt: (%.3f, %.3f)\n", path->at(i).x, path->at(i).y);
+	}
+
+//Godzilla says I should learn to fight my own battles!!!!
+//"we're so heavy in code... mechanical engineers don't know code at all - Daric"
+//this is the ultimate showdown. of ultimate destiny. good guys bad guys and explosison. as far as the eye can see.	
+
+	return 0;
 }
