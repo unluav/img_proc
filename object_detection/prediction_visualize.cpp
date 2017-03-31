@@ -72,10 +72,10 @@ int display(char *title[], queue<Point2f> points){
 		angle = (((x/abs(x))-1)*90) + (((y/abs(y))*(x/abs(x)))*(acos(abs(x)/dist)*(180/PI)));
 		Scalar color = Scalar((rand()%200)+55,(rand()%200)+55, (rand()%200)+55);
 		
-		ellipse(image, Point2f(lastEllipse[0],lastEllipse[1]), Size(25,25) , lastEllipse[2], 0.0, 45.0, Scalar(0,0,0), 2);
+		ellipse(image, Point2f(lastEllipse[0],lastEllipse[1]), Size(25,25) , lastEllipse[2], -22.5, 22.5, Scalar(0,0,0), 2);
 		arrowedLine(image, old, lastEnd, Scalar(0,0,0), 2, 8, 0, 1);
 		
-		ellipse(image, current, Size(25,25) , angle, 0.0, 45.0, color, 2);
+		ellipse(image, current, Size(25,25) , angle, -22.5, 22.5, color, 2);
 		arrowedLine(image, current, next, color, 2, 8, 0, 1);
 		imshow(window_name, image);
 		cvWaitKey(250);
