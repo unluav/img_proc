@@ -26,11 +26,9 @@ queue<Point2f> generatePoints() {
 		if(y>480 || y<0){
 		y -= (2*yoff);
 		}
-		q.push(Point2f(x,y));
-	
+		q.push(Point2f(x,y));	
 	}
 	return q;
-
 }
 
 int display(char *title[], queue<Point2f> points){
@@ -82,7 +80,6 @@ int display(char *title[], queue<Point2f> points){
 		imshow(window_name, image);
 		cvWaitKey(250);
 	}
-
 	return 0;
 }
 
@@ -94,5 +91,4 @@ int main(int argc, char *argv[]) {
 	display(argv, q);
 	
 	return 0;
-
 }
