@@ -1,4 +1,4 @@
-#include "ConfidenceArc.hpp"
+#include "confidence.hpp"
 #include <math.h>
 #include <random>
 #include <utility>

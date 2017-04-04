@@ -1,8 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include "ConfidenceArc.hpp"
+#include "confidence.hpp"
 #include <random>
-#include <pthread.h>
 
 void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* prediction) {
 	printf("\n\n\nPrevious: (%.3f, %.3f)\n", previous->x, previous->y);
