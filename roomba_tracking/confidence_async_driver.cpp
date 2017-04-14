@@ -1,30 +1,32 @@
 #include <iostream>
 #include <iomanip>
-#include "ConfidenceArc.hpp"
+#include "confidence.hpp"
 #include <random>
 #include <pthread.h>
 
 void* trackRoomba(void* arg) {
-	Prediction prediction;
-	cv::Point2f previous(0, 0);
 	cv::Point2f current(0, 0);
+	cv::Point2f previous = current;
 	ConfidenceArc arc(&previous, &current);
-	std::vector<cv::Point2f>* path = arc.getPath();
 	
 	for (int i = 0; i < 10; i++) {
 		current.x = i + (double) rand() / RAND_MAX * 0.01;
 		current.y = i + (double) rand() / RAND_MAX * 0.01;
-		printf("%lu: %.3f\n", pthread_self() % 100000000, prediction.confidence);		
+		printf("%lu: %.3f\n", pthread_self() % 100000000, arc.getLatestPrediction()->confidence);		
 
-		arc.recordPoint(&current);
-		arc.recordError(&previous, &current, &(prediction.point));
-		arc.predictPoint(&prediction, -1);
+		arc.cyclePoints(&previous, &current, -1);
 		previous = current;
 	}
+}
 
-//	for (int i = 0; i < path->size(); i++) {
-//		printf("\tPt: (%.3f, %.3f)\n", path->at(i).x, path->at(i).y);
-//	}
+void recordRoombas(std::vector<cv::Point2f>* centers, std::vector<ConfidenceArc>* arcs) {
+	for (int i = 0; i < centers->size(); i++) {
+		std::vector<cv::Point2f>* path = arcs->at(i).getPath();
+		cv::Point2f previous = path->at(path->size() - 1);
+		cv::Point2f current = centers->at(i);
+
+		arcs->at(i).cyclePoints(&previous, &current, -1);
+	}
 }
 
 int main(int argc, char** argv) {

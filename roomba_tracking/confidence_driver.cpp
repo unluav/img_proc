@@ -11,7 +11,6 @@ void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* predict
 }
 
 int main(int argc, char** argv) {
-	Prediction prediction;
 	cv::Point2f previous(0, 0);
 	cv::Point2f current(0, 0);
 	ConfidenceArc arc(&previous, &current);
@@ -20,11 +19,11 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < atoi(argv[1]); i++) {
 		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
 		current.y = i + (double) rand() / RAND_MAX * atof(argv[2]);
-		
+		printStage(&previous, &current, arc.getLatestPrediction());
+
 		arc.recordPoint(&current);
-		printStage(&previous, &current, &prediction);
-		arc.recordError(&previous, &current, &(prediction.point));
-		arc.predictPoint(&prediction, 10);
+		arc.recordError(&previous, &current);
+		arc.predictPoint(10);
 		previous = current;
 	}
 

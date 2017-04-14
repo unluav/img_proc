@@ -10,6 +10,9 @@
 ConfidenceArc::ConfidenceArc(cv::Point2f* p1, cv::Point2f* p2) {
 	this->recordPoint(p1);
 	this->recordPoint(p2);
+	Prediction prediction(*p1, 0);
+	this->predictionHistory.push_back(prediction);
+	this->predictionHistory.push_back(prediction);
 	this->distanceErrors.push_back(0.0);
 	this->distanceErrors.push_back(0.0);
 	this->angleErrors.push_back(0.0);
@@ -24,7 +27,15 @@ std::vector<cv::Point2f>* ConfidenceArc::getPath() {
 	return &(this->path);
 }
 
-void ConfidenceArc::predictPoint(Prediction* prediction, int length) {
+std::vector<Prediction>* ConfidenceArc::getPredictionHistory() {
+	return &(this->predictionHistory);
+}
+
+Prediction* ConfidenceArc::getLatestPrediction() {
+	return &(this->predictionHistory.at(this->predictionHistory.size() - 1));
+}
+
+void ConfidenceArc::predictPoint(int length) {
 	// Calculates the standard deviation and mean from the previous distance and angle errors
 	std::pair<double, double> distanceStats = this->fetchDevAndMean(&(this->distanceErrors), length);
 	std::pair<double, double> angleStats = this->fetchDevAndMean(&(this->angleErrors), length);
@@ -38,9 +49,10 @@ void ConfidenceArc::predictPoint(Prediction* prediction, int length) {
 	cv::Point2f current = this->path.at(this->path.size() - 1);
 	cv::Point2f difference = current - previous;
 
-	// Calculates the confidence
-	prediction->point = current + difference;
-	prediction->confidence = this->fetchConfidence(cv::norm(difference), distanceError, angleError);
+	// Adds the latest prediction to the history
+	double distance = cv::norm(difference);
+	Prediction prediction(current + difference, this->fetchConfidence(distance, distanceError, angleError));
+	this->predictionHistory.push_back(prediction);
 }
 
 double ConfidenceArc::fetchConfidence(double distance, double distanceError, double angleError) {
@@ -79,11 +91,17 @@ double ConfidenceArc::fetchError(std::pair<double, double>* stats) {
 	return fabs(distribution(sample));
 }
 
-void ConfidenceArc::recordError(cv::Point2f* previous, cv::Point2f* current, cv::Point2f* prediction) {
+void ConfidenceArc::recordError(cv::Point2f* previous, cv::Point2f* current) {
 	// Frames all three points in terms of previous being treated as the origin
-	cv::Point2f predicted = *prediction - *previous;
+	cv::Point2f predicted = this->getLatestPrediction()->point - *previous;
 	cv::Point2f actual = *current - *previous;
 
 	this->distanceErrors.push_back(fabs(cv::norm(predicted) - cv::norm(actual)));
 	this->angleErrors.push_back(fabs(atan2(predicted.y - actual.y, predicted.x - actual.x)));
+}
+
+void ConfidenceArc::cyclePoints(cv::Point2f* previous, cv::Point2f* current, int length) {
+	this->recordPoint(previous);
+	this->recordError(previous, current);
+	this->predictPoint(length);	
 }
