@@ -4,9 +4,12 @@
 #include <random>
 #include <pthread.h>
 
+using namespace std;
+using namespace cv;
+
 void* trackRoomba(void* arg) {
-	cv::Point2f current(0, 0);
-	cv::Point2f previous = current;
+	Point2f current(0, 0);
+	Point2f previous = current;
 	ConfidenceArc arc(&previous, &current);
 	
 	for (int i = 0; i < 10; i++) {
@@ -19,11 +22,11 @@ void* trackRoomba(void* arg) {
 	}
 }
 
-void recordRoombas(std::vector<cv::Point2f>* centers, std::vector<ConfidenceArc>* arcs) {
+void recordRoombas(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
 	for (int i = 0; i < centers->size(); i++) {
-		std::vector<cv::Point2f>* path = arcs->at(i).getPath();
-		cv::Point2f previous = path->at(path->size() - 1);
-		cv::Point2f current = centers->at(i);
+		vector<Point2f>* path = arcs->at(i).getPath();
+		Point2f previous = path->at(path->size() - 1);
+		Point2f current = centers->at(i);
 
 		arcs->at(i).cyclePoints(&previous, &current, -1);
 	}
