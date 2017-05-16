@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
 		printf("Usage: %s VIDEO_FILE\n", argv[0]);
 		return 1;
 	}
-
 	/* check file was correctly opened */
 	if (!video) {
 		printf("Unable to open \"%s\"\n", argv[1]);
