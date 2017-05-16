@@ -10,6 +10,7 @@ void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* predict
 	printf("Confidence: %.3f\n", prediction->confidence);
 }
 
+//Expected arguments are 1)Number of predictions and 2)Desired randomness of movement (0-1)
 int main(int argc, char** argv) {
 	cv::Point2f previous(0, 0);
 	cv::Point2f current(0, 0);
