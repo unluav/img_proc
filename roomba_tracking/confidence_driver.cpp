@@ -3,7 +3,10 @@
 #include "confidence.hpp"
 #include <random>
 
-void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* prediction) {
+using namespace std;
+using namespace cv;
+
+void printStage(Point2f* previous, Point2f* current, Prediction* prediction) {
 	printf("\n\n\nPrevious: (%.3f, %.3f)\n", previous->x, previous->y);
 	printf("Current: (%.3f, %.3f)\n", current->x, current->y);
 	printf("Predicted Point: (%.3f, %.3f)\n", prediction->point.x, prediction->point.y);
@@ -11,10 +14,10 @@ void printStage(cv::Point2f* previous, cv::Point2f* current, Prediction* predict
 }
 
 int main(int argc, char** argv) {
-	cv::Point2f previous(0, 0);
-	cv::Point2f current(0, 0);
+	Point2f previous(0, 0);
+	Point2f current(0, 0);
 	ConfidenceArc arc(&previous, &current);
-	std::vector<cv::Point2f>* path = arc.getPath();
+	vector<Point2f>* path = arc.getPath();
 	
 	for (int i = 0; i < atoi(argv[1]); i++) {
 		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
