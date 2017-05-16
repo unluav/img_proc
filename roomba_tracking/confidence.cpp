@@ -7,7 +7,10 @@
 
 #define OFFSET 0.000001
 
-ConfidenceArc::ConfidenceArc(cv::Point2f* p1, cv::Point2f* p2) {
+using namespace std;
+using namespace cv;
+
+ConfidenceArc::ConfidenceArc(Point2f* p1, Point2f* p2) {
 	this->recordPoint(p1);
 	this->recordPoint(p2);
 	Prediction prediction(*p1, 0);
@@ -19,15 +22,15 @@ ConfidenceArc::ConfidenceArc(cv::Point2f* p1, cv::Point2f* p2) {
 	this->angleErrors.push_back(0.0);
 }
 
-void ConfidenceArc::recordPoint(cv::Point2f* p) {
+void ConfidenceArc::recordPoint(Point2f* p) {
 	this->path.push_back(*p);
 }
 
-std::vector<cv::Point2f>* ConfidenceArc::getPath() {
+vector<Point2f>* ConfidenceArc::getPath() {
 	return &(this->path);
 }
 
-std::vector<Prediction>* ConfidenceArc::getPredictionHistory() {
+vector<Prediction>* ConfidenceArc::getPredictionHistory() {
 	return &(this->predictionHistory);
 }
 
@@ -37,20 +40,20 @@ Prediction* ConfidenceArc::getLatestPrediction() {
 
 void ConfidenceArc::predictPoint(int length) {
 	// Calculates the standard deviation and mean from the previous distance and angle errors
-	std::pair<double, double> distanceStats = this->fetchDevAndMean(&(this->distanceErrors), length);
-	std::pair<double, double> angleStats = this->fetchDevAndMean(&(this->angleErrors), length);
+	pair<double, double> distanceStats = this->fetchDevAndMean(&(this->distanceErrors), length);
+	pair<double, double> angleStats = this->fetchDevAndMean(&(this->angleErrors), length);
 
 	// Samples the normal distribution formed by the standard deviation and mean
 	double distanceError = this->fetchError(&distanceStats);
 	double angleError = this->fetchError(&angleStats);
 
 	// Straight-line prediction of the next point
-	cv::Point2f previous = this->path.at(this->path.size() - 2);
-	cv::Point2f current = this->path.at(this->path.size() - 1);
-	cv::Point2f difference = current - previous;
+	Point2f previous = this->path.at(this->path.size() - 2);
+	Point2f current = this->path.at(this->path.size() - 1);
+	Point2f difference = current - previous;
 
 	// Adds the latest prediction to the history
-	double distance = cv::norm(difference);
+	double distance = norm(difference);
 	Prediction prediction(current + difference, this->fetchConfidence(distance, distanceError, angleError));
 	this->predictionHistory.push_back(prediction);
 }
@@ -67,11 +70,11 @@ double ConfidenceArc::fetchConfidence(double distance, double distanceError, dou
 	return 1 - arcArea / circleArea;
 }
 
-std::pair<double, double> ConfidenceArc::fetchDevAndMean(std::vector<double>* collection, int length) {
+pair<double, double> ConfidenceArc::fetchDevAndMean(vector<double>* collection, int length) {
 	// Hand wavy statistical calculations
 	double mean = 0, variance = 0;
 	int size = collection->size();
-	length = length < 0 ? size : std::min(length, size);
+	length = length < 0 ? size : min(length, size);
 
 	for (int i = 1; i <= length; i++) {
 		mean += collection->at(size - i) / length;
@@ -81,26 +84,26 @@ std::pair<double, double> ConfidenceArc::fetchDevAndMean(std::vector<double>* co
 		variance += pow(collection->at(size - i) - mean, 2);
 	}
 
-	return std::make_pair(sqrt(variance / (length <= 1 ? 1 : length - 1)), mean);
+	return make_pair(sqrt(variance / (length <= 1 ? 1 : length - 1)), mean);
 }
 
-double ConfidenceArc::fetchError(std::pair<double, double>* stats) {
+double ConfidenceArc::fetchError(pair<double, double>* stats) {
 	// More hand wavy statistical calculations
-	std::default_random_engine sample;
-	std::normal_distribution<double> distribution(stats->second, stats->first);
+	default_random_engine sample;
+	normal_distribution<double> distribution(stats->second, stats->first);
 	return fabs(distribution(sample));
 }
 
-void ConfidenceArc::recordError(cv::Point2f* previous, cv::Point2f* current) {
+void ConfidenceArc::recordError(Point2f* previous, Point2f* current) {
 	// Frames all three points in terms of previous being treated as the origin
-	cv::Point2f predicted = this->getLatestPrediction()->point - *previous;
-	cv::Point2f actual = *current - *previous;
+	Point2f predicted = this->getLatestPrediction()->point - *previous;
+	Point2f actual = *current - *previous;
 
-	this->distanceErrors.push_back(fabs(cv::norm(predicted) - cv::norm(actual)));
+	this->distanceErrors.push_back(fabs(norm(predicted) - norm(actual)));
 	this->angleErrors.push_back(fabs(atan2(predicted.y - actual.y, predicted.x - actual.x)));
 }
 
-void ConfidenceArc::cyclePoints(cv::Point2f* previous, cv::Point2f* current, int length) {
+void ConfidenceArc::cyclePoints(Point2f* previous, Point2f* current, int length) {
 	this->recordPoint(previous);
 	this->recordError(previous, current);
 	this->predictPoint(length);	
