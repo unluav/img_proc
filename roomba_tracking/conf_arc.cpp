@@ -1,39 +1,42 @@
 #include "conf_arc.hpp"
-#include <math.h>
-#include <random>
-#include <utility>
-#include <iostream>
-#include <vector>
-
 #define OFFSET 0.000001
 
 using namespace std;
 using namespace cv;
 
+ConfidenceArc::ConfidenceArc() {
+	Point2f origin(0.0f, 0.0f);
+	this->construct(&origin, &origin);
+}
+
 ConfidenceArc::ConfidenceArc(Point2f* previous, Point2f* current) {
+	this->construct(previous, current);
+}
+
+void ConfidenceArc::construct(Point2f* previous, Point2f* current) {
 	this->path.push_back(*previous);
 	this->path.push_back(*current);
 	this->distanceErrors.push_back(0.0);
 	this->distanceErrors.push_back(0.0);
-	this->angleErrors.push_back(0.0);
-	this->angleErrors.push_back(0.0);
+	this->angleErrors.push_back(M_PI);
+	this->angleErrors.push_back(M_PI);
 	this->predictNext();
 }
 
 vector<Point2f>* ConfidenceArc::getPath() {
-	return &(this->path);
+	return &this->path;
 }
 
 Prediction* ConfidenceArc::getPrediction() {
-	return &(this->prediction);
+	return &this->prediction;
 }
 
 vector<double>* ConfidenceArc::getDistanceErrors() {
-	return &(this->distanceErrors);
+	return &this->distanceErrors;
 }
 
 vector<double>* ConfidenceArc::getAngleErrors() {
-	return &(this->angleErrors);
+	return &this->angleErrors;
 }
 
 pair<double, double> ConfidenceArc::calculateStats(vector<double>* collection, int length) {
@@ -66,7 +69,7 @@ void ConfidenceArc::cycleFrame(Point2f* current) {
 
 void ConfidenceArc::cycleFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
 	for (int i = 0; i < centers->size(); i++) {
-		arcs->at(i).cycleFrame(&(centers->at(i)));
+		arcs->at(i).cycleFrame(&centers->at(i));
 	}
 }
 
@@ -88,12 +91,12 @@ void ConfidenceArc::predictNext() {
 }
 
 double ConfidenceArc::calculateConfidence() {
-	int length = 10;
+	int length = 5;
 
 	Point2f previous = this->path.at(this->path.size() - 2);
 	Point2f current = this->path.at(this->path.size() - 1);
-	pair<double, double> distanceStats = this->calculateStats(&(this->distanceErrors), length);
-	pair<double, double> angleStats = this->calculateStats(&(this->angleErrors), length);
+	pair<double, double> distanceStats = this->calculateStats(&this->distanceErrors, length);
+	pair<double, double> angleStats = this->calculateStats(&this->angleErrors, length);
 
 	double distance = norm(current - previous) + OFFSET;
 	double distanceError = this->sampleError(&distanceStats) + OFFSET;

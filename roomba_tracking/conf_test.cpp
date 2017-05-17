@@ -1,49 +1,44 @@
-#include <iostream>
-#include <iomanip>
-#include "confidence.hpp"
-#include <random>
+#include "conf_arc.hpp"
 
 using namespace std;
 using namespace cv;
 
-void printStage(Point2f* previous, Point2f* current, Prediction* prediction) {
-	printf("\n\n\nPrevious: (%.3f, %.3f)\n", previous->x, previous->y);
-	printf("Current: (%.3f, %.3f)\n", current->x, current->y);
-	printf("Predicted Point: (%.3f, %.3f)\n", prediction->point.x, prediction->point.y);
-	printf("Confidence: %.3f\n", prediction->confidence);
+void printFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
+	for (int i = 0; i < centers->size(); i++) {
+		Point2f center = centers->at(i);
+		Prediction* prediction = arcs->at(i).getPrediction();
+		printf("A: (%.3f, %.3f)\t->\t", center.x, center.y);
+		printf("P: (%.3f, %.3f)\t", prediction->point.x, prediction->point.y);
+		printf("[ %.6f%% ]\n", prediction->confidence * 100);
+	}
+}
+
+void getNextFrame(vector<Point2f>* centers, double randCap, int frame) {
+	for (int i = 0; i < centers->size(); i++) {
+		centers->at(i).x = frame + i + (double) rand() / RAND_MAX * randCap;
+		centers->at(i).y = frame + i + (double) rand() / RAND_MAX * randCap;
+	}
 }
 
 int main(int argc, char** argv) {
-	Point2f previous(0, 0);
-	Point2f current(0, 0);
-	ConfidenceArc arc(&previous, &current);
-	vector<Point2f>* path = arc.getPath();
+	int roombaCount = 10;
+	vector<Point2f> centers;
+	vector<ConfidenceArc> arcs;
+	int frames = 10;
+	double randCap = 0.01;
+	Point2f origin(0.0f, 0.0f);
 
-	// How many frames should be simulated
-	int frames = atoi(argv[1]);
+	for (int i = 0; i < roombaCount; i++) {
+		centers.push_back(origin);
+		arcs.push_back(ConfidenceArc(&origin, &origin));
+	}
 
-	// Determines how random movement should be
-	// A value of 0.01 is probably realistic, 0.5 would probably indicate the drone moving
-	float randCap = atof(argv[2]);
-	
 	for (int i = 0; i < frames; i++) {
-		current.x = i + (double) rand() / RAND_MAX * randCap;
-		current.y = i + (double) rand() / RAND_MAX * randCap;
-		printStage(&previous, &current, arc.getLatestPrediction());
-
-		arc.recordPoint(&current);
-		arc.recordError(&previous, &current);
-		arc.predictPoint(10);
-		previous = current;
+		getNextFrame(&centers, randCap, i);
+		printf("\n\nWMWMWMWMWMWMWMWMWMWMWMWM FRAME %d MWMWMWMWMWMWMWMWMWMWMWMW\n", i + 1);
+		printFrame(&centers, &arcs);
+		ConfidenceArc::cycleFrame(&centers, &arcs);
 	}
-
-	for (int i = 0; i < path->size(); i++) {
-		printf("Pt: (%.3f, %.3f)\n", path->at(i).x, path->at(i).y);
-	}
-
-//Godzilla says I should learn to fight my own battles!!!!
-//"we're so heavy in code... mechanical engineers don't know code at all - Daric"
-//this is the ultimate showdown. of ultimate destiny. good guys bad guys and explosison. as far as the eye can see.	
 
 	return 0;
 }

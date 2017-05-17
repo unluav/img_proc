@@ -5,7 +5,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
-#include <queue>
 #include <utility>
 
 using namespace std;
@@ -28,6 +27,7 @@ struct Prediction {
 
 class ConfidenceArc {
 	public:
+		ConfidenceArc();
 		ConfidenceArc(Point2f* previous, Point2f* current);
 		vector<Point2f>* getPath();
 		Prediction* getPrediction();
@@ -42,6 +42,7 @@ class ConfidenceArc {
 		double calculateConfidence();
 
 	private:
+		void construct(Point2f* previous, Point2f* current);
 		vector<double> distanceErrors, angleErrors;
 		vector<Point2f> path;
 		Prediction prediction;
