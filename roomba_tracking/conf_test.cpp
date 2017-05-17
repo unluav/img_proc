@@ -18,10 +18,17 @@ int main(int argc, char** argv) {
 	Point2f current(0, 0);
 	ConfidenceArc arc(&previous, &current);
 	vector<Point2f>* path = arc.getPath();
+
+	// How many frames should be simulated
+	int frames = atoi(argv[1]);
+
+	// Determines how random movement should be
+	// A value of 0.01 is probably realistic, 0.5 would probably indicate the drone moving
+	float randCap = atof(argv[2]);
 	
-	for (int i = 0; i < atoi(argv[1]); i++) {
-		current.x = i + (double) rand() / RAND_MAX * atof(argv[2]);
-		current.y = i + (double) rand() / RAND_MAX * atof(argv[2]);
+	for (int i = 0; i < frames; i++) {
+		current.x = i + (double) rand() / RAND_MAX * randCap;
+		current.y = i + (double) rand() / RAND_MAX * randCap;
 		printStage(&previous, &current, arc.getLatestPrediction());
 
 		arc.recordPoint(&current);
