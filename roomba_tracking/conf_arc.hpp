@@ -35,8 +35,8 @@ class ConfidenceArc {
 		vector<double>* getAngleErrors();
 		pair<double, double> calculateStats(vector<double>* collection, int length);
 		double sampleError(pair<double, double>* stats);
-		void cycleFrame(Point2f* current);
-		static void cycleFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs);
+		void predictNextFrame(Point2f* current);
+		static void predictNextFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs);
 		void recordError();
 		void predictNext();
 		double calculateConfidence();

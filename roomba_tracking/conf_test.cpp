@@ -3,6 +3,7 @@
 using namespace std;
 using namespace cv;
 
+// Just a helpful printer
 void printFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
 	for (int i = 0; i < centers->size(); i++) {
 		Point2f center = centers->at(i);
@@ -13,6 +14,8 @@ void printFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
 	}
 }
 
+// Pseudo-randomly generates the next frame
+// More of a placeholder for passing in a frame to ConfidenceArc
 void getNextFrame(vector<Point2f>* centers, double randCap, int frame) {
 	for (int i = 0; i < centers->size(); i++) {
 		centers->at(i).x = frame + i + (double) rand() / RAND_MAX * randCap;
@@ -35,9 +38,9 @@ int main(int argc, char** argv) {
 
 	for (int i = 0; i < frames; i++) {
 		getNextFrame(&centers, randCap, i);
-		printf("\n\nWMWMWMWMWMWMWMWMWMWMWMWM FRAME %d MWMWMWMWMWMWMWMWMWMWMWMW\n", i + 1);
+		printf("\n\n************************ FRAME %d ************************\n", i + 1);
 		printFrame(&centers, &arcs);
-		ConfidenceArc::cycleFrame(&centers, &arcs);
+		ConfidenceArc::predictNextFrame(&centers, &arcs);
 	}
 
 	return 0;

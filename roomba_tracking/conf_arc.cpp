@@ -13,6 +13,9 @@ ConfidenceArc::ConfidenceArc(Point2f* previous, Point2f* current) {
 	this->construct(previous, current);
 }
 
+// Because calling the default constructor from another parameterized constructor
+// is a bit touchy, I present to you my own, private constructor that's not
+// actually a constructor in the technical sense
 void ConfidenceArc::construct(Point2f* previous, Point2f* current) {
 	this->path.push_back(*previous);
 	this->path.push_back(*current);
@@ -39,6 +42,9 @@ vector<double>* ConfidenceArc::getAngleErrors() {
 	return &this->angleErrors;
 }
 
+// Returns the standard deviation and mean of a collection of doubles
+// Length dictates how far back along the path the calculation should consider
+// A length less than or eqaul to zero will use the whole path
 pair<double, double> ConfidenceArc::calculateStats(vector<double>* collection, int length) {
 	double mean = 0, variance = 0;
 	int size = collection->size();
@@ -61,18 +67,20 @@ double ConfidenceArc::sampleError(pair<double, double>* stats) {
 	return fabs(distribution(sample));
 }
 
-void ConfidenceArc::cycleFrame(Point2f* current) {
+void ConfidenceArc::predictNextFrame(Point2f* current) {
 	this->path.push_back(*current);
 	this->recordError();
 	this->predictNext();
 }
 
-void ConfidenceArc::cycleFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
+void ConfidenceArc::predictNextFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs) {
 	for (int i = 0; i < centers->size(); i++) {
-		arcs->at(i).cycleFrame(&centers->at(i));
+		arcs->at(i).predictNextFrame(&centers->at(i));
 	}
 }
 
+// Given the current recorded position of the roomba, calculates how incorrect
+// the prediction was and pushes that to the histories of errors
 void ConfidenceArc::recordError() {
 	Point2f previous = this->path.at(this->path.size() - 2);
 	Point2f current = this->path.at(this->path.size() - 1) - previous;
@@ -83,6 +91,7 @@ void ConfidenceArc::recordError() {
 	this->angleErrors.push_back(atan2(error.y, error.x));
 }
 
+// Straight-line predicts the next point
 void ConfidenceArc::predictNext() {
 	Point2f previous = this->path.at(this->path.size() - 2);
 	Point2f current = this->path.at(this->path.size() - 1);
@@ -90,6 +99,7 @@ void ConfidenceArc::predictNext() {
 	this->prediction = Prediction(2 * current - previous, this->calculateConfidence());
 }
 
+// Calculates confidence in a prediction based on the last n points, given by length
 double ConfidenceArc::calculateConfidence() {
 	int length = 5;
 
