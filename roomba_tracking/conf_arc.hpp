@@ -5,7 +5,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
-#include <queue>
 #include <utility>
 
 using namespace std;
@@ -16,8 +15,7 @@ struct Prediction {
 	Point2f point;
 
 	Prediction() {
-		point.x = 0.0f;
-		point.y = 0.0f;
+		point = Point2f(0.0f, 0.0f);
 		confidence = 0;
 	}
 
@@ -29,22 +27,25 @@ struct Prediction {
 
 class ConfidenceArc {
 	public:
+		ConfidenceArc();
 		ConfidenceArc(Point2f* previous, Point2f* current);
-		void recordPoint(Point2f* p);
 		vector<Point2f>* getPath();
-		vector<Prediction>* getPredictionHistory();
-		Prediction* getLatestPrediction();
-		void predictPoint(int length);
-		double fetchConfidence(double distance, double distanceError, double angleError);
-		pair<double, double> fetchDevAndMean(vector<double>* collection, int length);
-		double fetchError(pair<double, double>* stats);
-		void recordError(Point2f* previous, Point2f* current);
-		void cyclePoints(Point2f* previous, Point2f* current, int length);
+		Prediction* getPrediction();
+		vector<double>* getDistanceErrors();
+		vector<double>* getAngleErrors();
+		pair<double, double> calculateStats(vector<double>* collection, int length);
+		double sampleError(pair<double, double>* stats);
+		void predictNextFrame(Point2f* current);
+		static void predictNextFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs);
+		void recordError();
+		void predictNext();
+		double calculateConfidence();
 
 	private:
+		void construct(Point2f* previous, Point2f* current);
 		vector<double> distanceErrors, angleErrors;
 		vector<Point2f> path;
-		vector<Prediction> predictionHistory;
+		Prediction prediction;
 };
 
 #endif
