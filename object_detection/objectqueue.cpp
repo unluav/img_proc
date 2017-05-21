@@ -21,8 +21,7 @@ queue generatePoints(){
 		q.push(Point2f(x,y));
 		
 	}
-	return q;
-	
+	return q;	
 }
 
 
@@ -38,9 +37,6 @@ int main(){
 		}
 		Point2f pt = q.pop();
 		current = pt;
-		
-		
-		
 	}
 	return 1;
 }
