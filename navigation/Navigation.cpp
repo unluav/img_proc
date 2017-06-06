@@ -66,7 +66,7 @@ void * Navigation::update_heading() {
 	}
 
 	//CLEAN UP RESOURECES, RETURN
-
+	return NULL;
 }
 
 void * Navigation::die() {

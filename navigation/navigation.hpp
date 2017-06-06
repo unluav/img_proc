@@ -8,7 +8,6 @@ typedef struct suggested_heading
 } SuggestedHeading;
 
 class Navigation {
-
 private:
 	SuggestedHeading 	sgtd_hdg 			= 	{.theta = 0, .speed = 0};
 	bool				die 				= 	false;
