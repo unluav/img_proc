@@ -1,18 +1,29 @@
 #ifndef NAVIGATION
 #define NAVIGATION
 
-#include <iostream>
-#include <iomanip>
-#include <map>
-#include <stdio.h>
-#include <algorithm>
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/core/core.hpp"
-#include "../object_detection/detection_framework.hpp"
+typedef struct suggested_heading
+{
+	double theta;
+	double speed;
+} SuggestedHeading;
 
+class Navigation {
 
-void update_heading(double theta, double magnitude);
-IplImage* query_image();
-double dist_from_org(Point2f* point);
+private:
+	SuggestedHeading 	sgtd_hdg 			= 	{.theta = 0, .speed = 0};
+	bool				die 				= 	false;
+	bool				alive				=	false;
+	std::thread 		t					=	NULL
+	static std::mutex 	die_mtx;
+	static std::mutex 	heading_mtx;
+
+	void * 				update_heading();
+
+public:
+	void *				die();
+	void *				start();
+	SuggestedHeading *	get_suggested_heading();
+
+} nav;
+
 #endif

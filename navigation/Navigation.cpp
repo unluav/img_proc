@@ -1,11 +1,25 @@
 #include "navigation.hpp"
 
+#include <iostream>
+#include <iomanip>
+#include <map>
+#include <stdio.h>
+#include <algorithm>
+#include <thread>
+#include <mutex>
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core.hpp"
+#include "../object_detection/detection_framework.hpp"
+#include "./suggested_heading.hpp"
+
 using namespace std;
 using namespace cv;
 
-#define QUERY_FREQUENCY 10
-#define MAX_SPEED_DISTANCE 100
-#define TEST_VIDEO_PATH 'change.me'			//NOTE: This will eventually go away when we implement live feed
+#define 	QUERY_FREQUENCY 		10					//	Number of frames processed per second
+#define 	MAX_SPEED_DISTANCE 		100					//	Defines the distance at which the suggested heading speed plateaus 
+#define 	TEST_VIDEO_PATH 		'change.me'			//	NOTE: This will eventually go away when we implement live feed
+#define 	FPS						30					//	NOTE: This will also go away
 
 /* 	
 *	This unit of code aims to utilize the functionality of roomba tracking and object detection to 
@@ -15,11 +29,86 @@ using namespace cv;
 *	the generated suggestions are printed by the phony interface
 */
 
+
+double dist_from_org(Point2f* point) {
+	return sqrt(pow(point.x,2) + pow(point.y,2));
+}
+
+//	Retrieves the frame that is currently being outputted by the camera.
+//	This will be the main method that needs to change when we swap over to a live feed
+IplImage * query_image() {
+	//TODO: Replace this w/ live feed
+	static VideoPlayer * videoPlayer = cvCaptureFromFile(TEST_VIDEO_PATH);
+
+	//Skip a number of frames based on the desired sampling frequency, loop video if necessary
+	double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + ( FPS / QUERY_FREQUENCY ) ;
+	if (fNum < 0)	//Hit end of video
+		fNum = 0;
+	cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
+	
+	return cvQueryFrame(video);
+}
+
+void * Navigation::update_heading() {
+	bool __die = false; 	//Local flag var I use to get around scope issues, may change later
+	while(!__die) {
+		//CALL FRAME ANALYSIS CODE input: IPLImage output: Point2f => Uses query image method to get IPLImage from source
+
+		//PASS FIRST ROOMBA COORDS. TO PREDICTION ALGORITHM input: Point2f output: prediction => Uses Koperski's Interface
+
+		heading_mtx.lock()
+		//UPDATE HEADING BASED OFF PREDICTION
+		heading_mtx.unlock()
+
+		die_mtx.lock()
+		__die = die;
+		die_mtx.unlock()
+	}
+
+	//CLEAN UP RESOURECES, RETURN
+
+}
+
+void * Navigation::die() {
+	//Set kill flag and wait for the thread to spin down
+	die_mtx.lock()
+	die = true;
+	die_mtx.unlock()
+
+	t.join();
+	alive = false;
+
+	return NULL;
+}
+
+void * Navigation::start() {
+	//Spin up the thread and set property
+	if (!alive) {
+		t = thread(Navigation::update_heading)
+		alive = true;
+	} else {
+		printf("A navigation thread is already running, please kill it before spawning a new one.\n");
+	}
+
+	return NULL;
+}
+
+SuggestedHeading * Navigation::get_suggested_heading() {
+	//Lock the mutex and make a deep copy of the suggested heading
+	heading_mtx.lock()
+	SuggestedHeading ret_val = { .theta = sgtd_hdg.theta, .speed = sgtd_hdg.speed }
+	heading_mtx.unlock()	
+
+	return &ret_val;
+}
+
+/*
+//This is some of my original code, it's pretty trash but I may end up using some of it.
 int main(int argc, char** argv) {
 	
 	vector<ConfidenceArc> arcs { new ConfidenceArc(), new ConfidenceArc(), new ConfidenceArc() };
 
-	while(1) {
+	while(!die) {
 		//CALL FRAME ANALYSIS CODE input: IPLImage output: Point2f
 		vector<Point2f> current_coords = get_positions(query_image());
 
@@ -28,33 +117,16 @@ int main(int argc, char** argv) {
 
 		//UPDATE HEADING BASED OFF PREDICTION
 		Prediction* tracked_roomba = arcs.at(0).getPrediction();
-		double speed = dist_from_org(tracked_roomba->point) / MAX_SPEED_DISTANCE * tracked_roomba->confidence;
+		speed = dist_from_org(tracked_roomba->point) / MAX_SPEED_DISTANCE * tracked_roomba->confidence;
 		speed = min(1,speed);
-		double theta = tan(tracked_roomba->point.y / tracked_roomba->point.x) * PI / 180;
+		theta = tan(tracked_roomba->point.y / tracked_roomba->point.x) * PI / 180;
 		update_heading(theta, speed);
 
 	}
 }
 
-//	Retrieves the frame that is currently being outputted by the camera.
-//	This will be the main method that needs to change when we swap over to a live feed
-IplImage* query_image() {
-	//TODO: Replace this w/ live feed
-	static VideoPlayer* videoPlayer = cvCaptureFromFile(TEST_VIDEO_PATH);
+*/
 
-	//Skip a number of frames based on the desired sampling frequency, loop video if necessary
-	double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + QUERY_FREQUENCY ;
-	if (fNum < 0)
-		fNum = 0;
-	cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
-	
-	return cvQueryFrame(video);
-}
 
-double dist_from_org(Point2f* point) {
-	return sqrt(pow(point.x,2) + pow(point.y,2));
-}
 
-void update_heading(double theta, double magnitude) {
-	cout<<"Magnitude: " << magnitude << "\nTheta: " << theta << endl;
-}
+
