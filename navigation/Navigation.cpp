@@ -51,7 +51,9 @@ void * Navigation::update_heading() {
     Point2f * first_frame_pts = query_image();
     this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
     Point2f * second_frame_pts = query_image();
+
     ConfidenceArc conf_arc = new ConfidenceArc(first_frame_pts, second_frame_pts);
+    Prediction prediction = *conf_arc.getPrediction();
 
 
     while(!__die) {
@@ -59,9 +61,8 @@ void * Navigation::update_heading() {
         // Get current points
         Point2f * img_pts = IMAGINARY_LOGAN_FUNCTION_CALL_YAY(query_image());
 
-        // Register points and get prediction
+        // Register points and get next prediction
         conf_arc.predictNextFrame(img_pts);
-        Prediction prediction = conf_arc.getPrediction();
 
         // Update heading
         heading_mtx.lock();
