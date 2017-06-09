@@ -72,6 +72,8 @@ void * Navigation::update_heading() {
         die_mtx.lock();
         __die = die;
         die_mtx.unlock();
+
+        this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
     }
 
     //CLEAN UP RESOURECES, RETURN
