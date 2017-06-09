@@ -1,5 +1,6 @@
 using namespace std;
 #include <stdio.h>
+#include <iostream>
 #include <map>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -125,5 +126,6 @@ for(int i=0;i<size;i++){
 /*return number of detected objects*/
 
 return num+num2;
+
 
 }
