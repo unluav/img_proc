@@ -23,7 +23,7 @@
 #include "opencv2/core/core.hpp"
 #include "../object_detection/detection_framework.hpp"
 #include "./suggested_heading.hpp"
-#include "../roomba_tracking/conf_arc.hpp"
+#include "../object_tracking/conf_arc.hpp"
 
 using namespace std;
 using namespace cv;
@@ -43,26 +43,61 @@ IplImage * query_image() {
     return cvQueryFrame(video);
 }
 
+
+Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
+    /*
+     * This method takes an array of centers an returns the point that is closest to the 
+     * given point (typically the center of the screen) 
+     * AUTHOR: Jacob Koperski
+     */
+
+    int closest = 0;
+    Point2f diff(0, 0);
+    double min_dist = norm(diff);
+
+    for (int i = 0; i < size; i++) {
+        diff = Point2f(centers[i].x - origin->x, centers[i].y - origin->y);
+        double dist = norm(diff);
+
+        if (dist < min_dist) {
+            min_dist = dist;
+            closest = i;
+        }
+    }
+
+    return &centers[closest];
+}
+
 //DONE FOR NOW?
 void * Navigation::update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
-    Point2f * first_frame_pts = query_image();
+    IplImage * first_frame = query_image();
+    Point2f * first_frame_pts = LOGANSTHING(first_frame)
+
     this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
-    Point2f * second_frame_pts = query_image();
+
+    IplImage * second_frame = query_image();
+    Point2f * second_frame_pts = LOGANSTHING(second_frame)
 
     ConfidenceArc conf_arc = new ConfidenceArc(first_frame_pts, second_frame_pts);
     Prediction prediction = *conf_arc.getPrediction();
 
+    int size = 0;
+    Point2f centers[25];
+    Point2f * focused = NULL;
+    Point2f origin((double) first_frame->width / 2, (double) first_frame->height / 2);
+
 
     while(!__die) {
 
-        // Get current points
-        Point2f * img_pts = IMAGINARY_LOGAN_FUNCTION_CALL_YAY(query_image());
+        // Get current closest point
+        size = CenterTracking(centers, query_image());
+        focused = focusObject(&origin, centers, size);
 
         // Register points and get next prediction
-        conf_arc.predictNextFrame(img_pts);
+        conf_arc.predictNextFrame(focused);
 
         // Update heading
         heading_mtx.lock();
