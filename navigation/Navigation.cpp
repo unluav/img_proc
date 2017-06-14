@@ -21,9 +21,9 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
-#include "../object_detection/detection_framework.hpp"
-#include "./suggested_heading.hpp"
+#include "../object_detection/cpu_color_video.hpp"
 #include "../object_tracking/conf_arc.hpp"
+
 
 using namespace std;
 using namespace cv;
@@ -73,16 +73,20 @@ void * Navigation::update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
-    IplImage * first_frame = query_image();
-    Point2f * first_frame_pts = LOGANSTHING(first_frame)
+    Point2f first_frame_pts[25];
+    Point2f second_frame_pts[25];
 
-    this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
+    IplImage * first_frame      =   query_image();
+    int first_frame_size        =   CenterTracking(first_frame_points, first_frame)
 
-    IplImage * second_frame = query_image();
-    Point2f * second_frame_pts = LOGANSTHING(second_frame)
+    this_thread::sleep_for(chrono::seconds(1.0 / QUERY_FREQUENCY));
 
-    ConfidenceArc conf_arc = new ConfidenceArc(first_frame_pts, second_frame_pts);
-    Prediction prediction = *conf_arc.getPrediction();
+    IplImage * second_frame     =   query_image();
+    int second_frame_size       =   CenterTracking(second_frame_points, second_frame)
+
+    ConfidenceArc conf_arc      =   new ConfidenceArc(first_frame_pts, second_frame_pts);
+    Prediction prediction       =   *conf_arc.getPrediction();
+
 
     int size = 0;
     Point2f centers[25];

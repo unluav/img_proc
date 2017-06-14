@@ -6,12 +6,14 @@ using namespace std;
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
 
+#include "cpu_color_video.hpp"
+
 using namespace cv;
 int CenterTracking(Point2f Centers[],IplImage *frame ) {
     int delay = 0, key=0, i=0, counter=0;
 
-/*calculate size of array*/
-  int size = sizeof(Centers)/ sizeof(Point2f);
+	/*calculate size of array*/
+  	int size = sizeof(Centers)/ sizeof(Point2f);
 
 
     IplImage  *blobs = NULL;
@@ -56,76 +58,74 @@ int CenterTracking(Point2f Centers[],IplImage *frame ) {
  	findContours(redBlobs, redContours, rHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
  	findContours(greenBlobs, greenContours, gHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-/*calculate min enclosing circles for every red and green contour*/
+	/*calculate min enclosing circles for every red and green contour*/
 
-vector<vector<Point> > contours_poly(greenContours.size());
-vector<vector<Point> > contours_poly2(redContours.size());
-vector<Point2f>center(greenContours.size());
-vector<Point2f>center2(redContours.size());
-vector<float>radius(greenContours.size());
-vector<float>radius2(redContours.size());
-for(int i = 0;i<redContours.size();i++){
-	approxPolyDP( Mat(redContours[i]),contours_poly2[i],3,true);
-	minEnclosingCircle( (Mat)contours_poly2[i],center2[i],radius2[i]);
-}
-for(int i = 0;i<greenContours.size();i++){
-	approxPolyDP( Mat(greenContours[i]),contours_poly[i],3,true);
-	minEnclosingCircle( (Mat)contours_poly[i],center[i],radius[i]);
-}
+	vector<vector<Point> > contours_poly(greenContours.size());
+	vector<vector<Point> > contours_poly2(redContours.size());
+	vector<Point2f>center(greenContours.size());
+	vector<Point2f>center2(redContours.size());
+	vector<float>radius(greenContours.size());
+	vector<float>radius2(redContours.size());
+	for(int i = 0;i<redContours.size();i++){
+		approxPolyDP( Mat(redContours[i]),contours_poly2[i],3,true);
+		minEnclosingCircle( (Mat)contours_poly2[i],center2[i],radius2[i]);
+	}
+	for(int i = 0;i<greenContours.size();i++){
+		approxPolyDP( Mat(greenContours[i]),contours_poly[i],3,true);
+		minEnclosingCircle( (Mat)contours_poly[i],center[i],radius[i]);
+	}
 
-float GreenMaxRadius[5]={};
-float RedMaxRadius[5]={};
-int GreenMax[5]={};
-int RedMax[5]={};
-Point2f GreenCenters[5];
-Point2f RedCenters[5];
-Point2f Centers[10];
-int flag=0;
-int num=0;
-int num2=0;
+	float GreenMaxRadius[5]={};
+	float RedMaxRadius[5]={};
+	int GreenMax[5]={};
+	int RedMax[5]={};
+	Point2f GreenCenters[5];
+	Point2f RedCenters[5];
+	Point2f Centers[10];
+	int flag=0;
+	int num=0;
+	int num2=0;
 
-/*find five largest red and green objects with radius above 20 pixles to reduce noise*/
+	/*find five largest red and green objects with radius above 20 pixles to reduce noise*/
 
-for(int i=0;i<redContours.size();i++){
-	flag=0;
-	for(int j=0;j<5;j++){
-		if(radius2[i]>RedMaxRadius[j] && flag==0 && radius2[i]>20){
-			RedMaxRadius[j]=radius2[i];
-			RedMax[j]=i;
-			RedCenters[j]=center2[i];
-			flag=1;
-			num++;
+	for(int i=0;i<redContours.size();i++){
+		flag=0;
+		for(int j=0;j<5;j++){
+			if(radius2[i]>RedMaxRadius[j] && flag==0 && radius2[i]>20){
+				RedMaxRadius[j]=radius2[i];
+				RedMax[j]=i;
+				RedCenters[j]=center2[i];
+				flag=1;
+				num++;
+			}
 		}
 	}
-}
-for(int i=0;i<greenContours.size();i++){
-	flag=0;
-	for(int j=0;j<5;j++){
-		if(radius[i]>GreenMaxRadius[j] && flag==0 && radius[i]>20){
-			GreenMaxRadius[j]=radius[i];
-			GreenCenters[j]=center[i];
-			GreenMax[j]=i;
-			flag=1;
-			num2++;
+	for(int i=0;i<greenContours.size();i++){
+		flag=0;
+		for(int j=0;j<5;j++){
+			if(radius[i]>GreenMaxRadius[j] && flag==0 && radius[i]>20){
+				GreenMaxRadius[j]=radius[i];
+				GreenCenters[j]=center[i];
+				GreenMax[j]=i;
+				flag=1;
+				num2++;
+			}
 		}
 	}
-}
 
-/*combine red and green arrays into one array and fill rest of array with -1,-1*/
+	/*combine red and green arrays into one array and fill rest of array with -1,-1*/
 
-for(int i=0;i<size;i++){
-	if(i<num){
-		Centers[i]=RedCenters[i];
-	}else if(i<num+num2){
-		Centers[i]=GreenCenters[i-num];
-	}else{
-		Centers[i]= Point2f (-1,-1);
+	for(int i=0;i<size;i++){
+		if(i<num){
+			Centers[i]=RedCenters[i];
+		}else if(i<num+num2){
+			Centers[i]=GreenCenters[i-num];
+		}else{
+			Centers[i]= Point2f (-1,-1);
+		}
 	}
-}
 
-/*return number of detected objects*/
+	/*return number of detected objects*/
 
-return num+num2;
-
-
+	return num+num2;
 }
