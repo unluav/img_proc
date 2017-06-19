@@ -8,17 +8,16 @@
 using namespace std;
 using namespace cv;
 
-int findLargest(int size, vector<float> radii, float max_radii[], int max[], Point2f max_centers[], vector<Point2f> centers) {
+int findLargest(int size, vector<float> radii, vector<Point2f> centers, float[] key_radii, Point2f[] key_centers) {
 	int flag = 0, count = 0;
 
 	for (int i = 0; i < size; i++) {
 		flag = 0;
 
 		for (int j = 0; j < 5; j++) {
-			if (radii[i] > max_radii[j] && flag == 0 && radii[i] > 20) {
-				max_radii[j] = radii[i];
-				max[j] = i;
-				max_centers[j] = centers[i];
+			if (radii[i] > key_radii[j] && flag == 0 && radii[i] > 20) {
+				key_radii[j] = radii[i];
+				key_centers[j] = centers[i];
 				flag = 1;
 				count++;
 			}
@@ -28,9 +27,8 @@ int findLargest(int size, vector<float> radii, float max_radii[], int max[], Poi
 	return count;
 }
 
-int CenterTracking(Point2f Centers[], IplImage *frame) {
+int CenterTracking(Point2f centers[], IplImage *frame) {
 	// calculate size of array
-	int size = sizeof (Centers) / sizeof (Point2f);
 	IplImage *blobs = NULL;
 
 	// check frame was correctly loaded
@@ -69,42 +67,42 @@ int CenterTracking(Point2f Centers[], IplImage *frame) {
 	findContours(greenBlobs, greenContours, gHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 	// calculate min enclosing circles for every red and green contour
-	vector<vector<Point>> contours_poly(greenContours.size());
-	vector<vector<Point>> contours_poly2(redContours.size());
-	vector<Point2f> center(greenContours.size());
-	vector<Point2f> center2(redContours.size());
-	vector<float> radius(greenContours.size());
-	vector<float> radius2(redContours.size());
+	vector<vector<Point>> red_poly(redContours.size());
+	vector<vector<Point>> green_poly(greenContours.size());
+	vector<Point2f> red_centers(redContours.size());
+	vector<Point2f> green_centers(greenContours.size());
+	vector<float> red_radii(redContours.size());
+	vector<float> green_radii(greenContours.size());
 
 	for (int i = 0; i < redContours.size(); i++) {
-		approxPolyDP(Mat(redContours[i]), contours_poly2[i], 3, true);
-		minEnclosingCircle((Mat) contours_poly2[i], center2[i], radius2[i]);
+		approxPolyDP(Mat(redContours[i]), red_poly[i], 3, true);
+		minEnclosingCircle((Mat) red_poly[i], red_centers[i], red_radii[i]);
 	}
 
 	for (int i = 0;i < greenContours.size(); i++) {
-		approxPolyDP(Mat(greenContours[i]), contours_poly[i], 3, true);
-		minEnclosingCircle((Mat) contours_poly[i], center[i], radius[i]);
+		approxPolyDP(Mat(greenContours[i]), green_poly[i], 3, true);
+		minEnclosingCircle((Mat) green_poly[i], green_centers[i], green_radii[i]);
 	}
 
-	float GreenMaxRadius[5] = {};
-	float RedMaxRadius[5] = {};
-	int GreenMax[5] = {};
-	int RedMax[5] = {};
-	Point2f GreenCenters[5];
-	Point2f RedCenters[5];
+	float key_red_radii[5] = {};
+	float key_green_radii[5] = {};
+	Point2f key_red_centers[5];
+	Point2f key_green_centers[5];
 
-	int red_count = findLargest(redContours.size(), radius2, RedMaxRadius, RedMax, RedCenters, center2);
-	int green_count = findLargest(greenContours.size(), radius, GreenMaxRadius, GreenMax, GreenCenters, center);
+	int red_count = findLargest(redContours.size(), red_radii, red_centers, key_red_radii, key_red_centers);
+	int green_count = findLargest(greenContours.size(), green_radii, green_centers, key_green_radii, key_green_centers);
 	int total_count = red_count + green_count;
 
 	// combine red and green arrays into one array and fill rest of array with -1,-1
+	int size = sizeof (centers) / sizeof (Point2f);
+
 	for (int i = 0; i < size; i++) {
 		if (i < red_count) {
-			Centers[i] = RedCenters[i];
+			centers[i] = key_red_centers[i];
 		} else if (i < total_count) {
-			Centers[i] = GreenCenters[i - red_count];
+			centers[i] = key_green_centers[i - red_count];
 		} else {
-			Centers[i] = Point2f(-1, -1);
+			centers[i] = Point2f(-1, -1);
 		}
 	}
 
