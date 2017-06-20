@@ -24,12 +24,18 @@ int main(int argc, char** argv) {
 	}
 
 	window_name = argv[1];
-	namedWindow(window_name, 1);
+	// namedWindow(window_name, 1);
 	Point2f centers[10] = { };
 	
 	do {
 		frame = cvQueryFrame(video);
 		int count = fetchCenters(centers, frame);
+
+		for (int i = 0 ; i < 10; i++) {
+			cout << "(" << centers[i].x << ", " << centers[i].y << ")\t";
+		}
+
+		cout << endl;
 	} while (frame);
 	return 0;
 }
