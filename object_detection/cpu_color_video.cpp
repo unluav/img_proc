@@ -9,22 +9,18 @@
 using namespace std;
 using namespace cv;
 
-int findLargest(int size, int num_objects,  vector<Circle>* circles, vector<Circle>* key_circles) {
-	int flag = 0, count = 0, min_radius = 20; // min_radius in pixels
+bool BY_RADIUS(Circle first, Circle second) {
+	return *first.getRadius() <= *second.getRadius();
+}
 
-	for (int i = 0; i < size; i++) {
-		flag = 0;
+int findLargest(int* num_objects,  vector<Circle>* circles, vector<Circle>* key_circles) {
+	int size = circles->size();
+	sort(circles->begin(), circles->end(), BY_RADIUS);
+	*num_objects = min(*num_objects, size);
 
-		for (int j = 0; j < num_objects; j++) {
-			if (*(*circles)[i].getRadius() > *((*key_circles)[j]).getRadius() && flag == 0 && *((*circles)[i]).getRadius() > min_radius) {
-				(*key_circles)[j] = (*circles)[i];
-				flag = 1;
-				count++;
-			}
-		}
+	for (int i = 1; i <= *num_objects; i++) {
+		key_circles->push_back((*circles)[size - i]);
 	}
-
-	return count;
 }
 
 int fetchCenters(Point2f centers[], IplImage *frame) {
@@ -65,16 +61,16 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 		minEnclosingCircle((Mat) red_poly[i], *red_circles[i].getCenter(), *red_circles[i].getRadius());
 	}
 
-	for (int i = 0;i < green_count; i++) {
+	for (int i = 0; i < green_count; i++) {
 		approxPolyDP(Mat(green_contours[i]), green_poly[i], 3, true);
 		minEnclosingCircle((Mat) green_poly[i], *green_circles[i].getCenter(), *green_circles[i].getRadius());
 	}
 
-	int num_objects = 5;
-	vector<Circle> key_red_circles(num_objects), key_green_circles(num_objects);
+	red_count = 5, green_count = 5;
+	vector<Circle> key_red_circles(red_count), key_green_circles(green_count);
 
-	red_count = findLargest(red_count, num_objects, &red_circles, &key_red_circles);
-	green_count = findLargest(green_count, num_objects, &green_circles, &key_green_circles);
+	findLargest(&red_count, &red_circles, &key_red_circles);
+	findLargest(&green_count, &green_circles, &key_green_circles);
 	int total_count = red_count + green_count;
 
 	// combine red and green arrays into one array and fill rest of array with -1,-1
