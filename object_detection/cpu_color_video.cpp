@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <iostream>
-#include <map>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>
 #include "cpu_color_video.hpp"
 
 using namespace std;
@@ -13,7 +7,7 @@ bool BY_RADIUS(Circle first, Circle second) {
 	return *first.getRadius() <= *second.getRadius();
 }
 
-int findLargest(int* num_objects,  vector<Circle>* circles, vector<Circle>* key_circles) {
+int findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles) {
 	int size = circles->size();
 	sort(circles->begin(), circles->end(), BY_RADIUS);
 	*num_objects = min(*num_objects, size);
@@ -24,19 +18,8 @@ int findLargest(int* num_objects,  vector<Circle>* circles, vector<Circle>* key_
 }
 
 int fetchCenters(Point2f centers[], IplImage *frame) {
-	// calculate size of array
-	IplImage *blobs = NULL;
-
-	// check frame was correctly loaded
-	if (blobs == NULL) {
-		printf("error");
-		return -1;
-	}
-
-	blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
+	IplImage *blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
 	Mat temp_blobs, red_blobs, green_blobs, lower_red_blobs, upper_red_blobs;
-
-	// Creating a Mat version of the current frame
 	cvarrToMat(blobs).copyTo(temp_blobs);	
 
 	// Finding the color blobs (needs to be a colored image) using Inrange
