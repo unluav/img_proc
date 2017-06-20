@@ -31,4 +31,8 @@ struct Circle {
 	}
 };
 
+bool BY_RADIUS(Circle first, Circle second);
+int findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles);
+int fetchCenters(Point2f centers[], IplImage* frame);
+
 #endif
