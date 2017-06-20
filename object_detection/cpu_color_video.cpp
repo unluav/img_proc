@@ -4,20 +4,20 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
+#include "cpu_color_video.hpp"
 
 using namespace std;
 using namespace cv;
 
-int findLargest(int size, vector<float>* radii, vector<Point2f>* centers, vector<float>* key_radii, vector<Point2f>* key_centers) {
+int findLargest(int size, int num_objects,  vector<Circle>* circles, vector<Circle>* key_circles) {
 	int flag = 0, count = 0, min_radius = 20; // min_radius in pixels
 
 	for (int i = 0; i < size; i++) {
 		flag = 0;
 
-		for (int j = 0; j < 5; j++) {
-			if ((*radii)[i] > (*key_radii)[j] && flag == 0 && (*radii)[i] > min_radius) {
-				(*key_radii)[j] = (*radii)[i];
-				(*key_centers)[j] = (*centers)[i];
+		for (int j = 0; j < num_objects; j++) {
+			if (*(*circles)[i].getRadius() > *((*key_circles)[j]).getRadius() && flag == 0 && *((*circles)[i]).getRadius() > min_radius) {
+				(*key_circles)[j] = (*circles)[i];
 				flag = 1;
 				count++;
 			}
@@ -58,24 +58,23 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 	// calculate min enclosing circles for every red and green contour
 	int red_count = red_contours.size(), green_count = green_contours.size();
 	vector<vector<Point>> red_poly(red_count), green_poly(green_count);
-	vector<Point2f> red_centers(red_count), green_centers(green_count);
-	vector<float> red_radii(red_count), green_radii(green_count);
+	vector<Circle> red_circles(red_count), green_circles(green_count);
 
 	for (int i = 0; i < red_count; i++) {
 		approxPolyDP(Mat(red_contours[i]), red_poly[i], 3, true);
-		minEnclosingCircle((Mat) red_poly[i], red_centers[i], red_radii[i]);
+		minEnclosingCircle((Mat) red_poly[i], *red_circles[i].getCenter(), *red_circles[i].getRadius());
 	}
 
 	for (int i = 0;i < green_count; i++) {
 		approxPolyDP(Mat(green_contours[i]), green_poly[i], 3, true);
-		minEnclosingCircle((Mat) green_poly[i], green_centers[i], green_radii[i]);
+		minEnclosingCircle((Mat) green_poly[i], *green_circles[i].getCenter(), *green_circles[i].getRadius());
 	}
 
-	vector<float> key_red_radii(5), key_green_radii(5);
-	vector<Point2f> key_red_centers(5), key_green_centers(5);
+	int num_objects = 5;
+	vector<Circle> key_red_circles(num_objects), key_green_circles(num_objects);
 
-	red_count = findLargest(red_count, &red_radii, &red_centers, &key_red_radii, &key_red_centers);
-	green_count = findLargest(green_count, &green_radii, &green_centers, &key_green_radii, &key_green_centers);
+	red_count = findLargest(red_count, num_objects, &red_circles, &key_red_circles);
+	green_count = findLargest(green_count, num_objects, &green_circles, &key_green_circles);
 	int total_count = red_count + green_count;
 
 	// combine red and green arrays into one array and fill rest of array with -1,-1
@@ -83,9 +82,9 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 
 	for (int i = 0; i < size; i++) {
 		if (i < red_count) {
-			centers[i] = key_red_centers[i];
+			centers[i] = *key_red_circles[i].getCenter();
 		} else if (i < total_count) {
-			centers[i] = key_green_centers[i - red_count];
+			centers[i] = *key_green_circles[i - red_count].getCenter();
 		} else {
 			centers[i] = Point2f(-1, -1);
 		}
