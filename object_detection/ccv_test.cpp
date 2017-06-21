@@ -26,16 +26,30 @@ int main(int argc, char** argv) {
 	window_name = argv[1];
 	// namedWindow(window_name, 1);
 	Point2f centers[10] = { };
-	
-	do {
-		frame = cvQueryFrame(video);
-		int count = fetchCenters(centers, frame);
+	frame = cvQueryFrame(video);
+	int frame_count = 1;
 
+//	for (int i = 0; i < 50; i++) {
+//		cout << "QUERIED " << i << endl;
+//		frame = cvQueryFrame(video);
+//	}
+
+	cout << "FINISHED FOR LOOP" << endl;
+
+	while (frame) {
+		cout << "PRE-FETCH" << endl;
+		int count = fetchCenters(centers, frame);
+		cout << "POST-FETCH" << endl;
+
+		cout << frame_count << ":\t";
 		for (int i = 0 ; i < 10; i++) {
 			cout << "(" << centers[i].x << ", " << centers[i].y << ")\t";
 		}
 
 		cout << endl;
-	} while (frame);
+		frame = cvQueryFrame(video);
+		frame_count++;
+	}
+
 	return 0;
 }

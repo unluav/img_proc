@@ -1,4 +1,5 @@
 #include "cpu_color_video.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace cv;
@@ -55,6 +56,12 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 	findLargest(&red_count, &red_circles, &key_red_circles);
 	findLargest(&green_count, &green_circles, &key_green_circles);
 	int total_count = red_count + green_count;
+
+	cout << "KEY RED CIRCLES" << endl;
+	for (int i = 0; i < total_count; i++) {
+		cout << "(" << (*key_red_circles[i].getCenter()).x << ", " << (*key_red_circles[i].getCenter()).y << ")\t";
+		cout << *key_red_circles[i].getRadius() << endl;
+	}
 
 	// combine red and green arrays into one array and fill rest of array with -1,-1
 	int size = sizeof (centers) / sizeof (Point2f);
