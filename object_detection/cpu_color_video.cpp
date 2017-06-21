@@ -5,10 +5,10 @@ using namespace std;
 using namespace cv;
 
 bool BY_RADIUS(Circle first, Circle second) {
-	return *first.getRadius() <= *second.getRadius();
+	return first.radius <= second.radius;
 }
 
-int findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles) {
+void findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles) {
 	int size = circles->size();
 	sort(circles->begin(), circles->end(), BY_RADIUS);
 	*num_objects = min(*num_objects, size);
@@ -42,12 +42,12 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 
 	for (int i = 0; i < red_count; i++) {
 		approxPolyDP(Mat(red_contours[i]), red_poly[i], 3, true);
-		minEnclosingCircle((Mat) red_poly[i], *red_circles[i].getCenter(), *red_circles[i].getRadius());
+		minEnclosingCircle((Mat) red_poly[i], red_circles[i].center, red_circles[i].radius);
 	}
 
 	for (int i = 0; i < green_count; i++) {
 		approxPolyDP(Mat(green_contours[i]), green_poly[i], 3, true);
-		minEnclosingCircle((Mat) green_poly[i], *green_circles[i].getCenter(), *green_circles[i].getRadius());
+		minEnclosingCircle((Mat) green_poly[i], green_circles[i].center, green_circles[i].radius);
 	}
 
 	red_count = 5, green_count = 5;
@@ -58,19 +58,29 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 	int total_count = red_count + green_count;
 
 	cout << "KEY RED CIRCLES" << endl;
-	for (int i = 0; i < total_count; i++) {
-		cout << "(" << (*key_red_circles[i].getCenter()).x << ", " << (*key_red_circles[i].getCenter()).y << ")\t";
-		cout << *key_red_circles[i].getRadius() << endl;
+	for (int i = 0; i < red_count; i++) {
+		cout << "[(" << key_red_circles[i].center.x << ", " << key_red_circles[i].center.y << ")\t";
+		cout << key_red_circles[i].radius << "]\t";
 	}
 
+	cout << endl;
+
+	cout << "KEY GREEN CIRCLES" << endl;
+	for (int i = 0; i < green_count; i++) {
+		cout << "[(" << key_green_circles[i].center.x << ", " << key_green_circles[i].center.y << ")\t";
+		cout << key_green_circles[i].radius << "]\t";
+	}
+
+	cout << endl;
+
 	// combine red and green arrays into one array and fill rest of array with -1,-1
-	int size = sizeof (centers) / sizeof (Point2f);
+	int size = sizeof (Point2f*) / sizeof (Point2f);
 
 	for (int i = 0; i < size; i++) {
 		if (i < red_count) {
-			centers[i] = *key_red_circles[i].getCenter();
+			centers[i] = key_red_circles[i].center;
 		} else if (i < total_count) {
-			centers[i] = *key_green_circles[i - red_count].getCenter();
+			centers[i] = key_green_circles[i - red_count].center;
 		} else {
 			centers[i] = Point2f(-1, -1);
 		}

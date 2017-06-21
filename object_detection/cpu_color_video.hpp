@@ -17,22 +17,14 @@ struct Circle {
 		radius = 0.0f;
 	}
 
-	Circle(Point2f* c, float* r) {
-		center = *c;
-		radius = *r;
-	}
-
-	Point2f* getCenter() {
-		return &center;
-	}
-
-	float* getRadius() {
-		return &radius;
-	}
+	Circle(Point2f c, float r) {
+		center = c;
+		radius = r;
+	}	
 };
 
 bool BY_RADIUS(Circle first, Circle second);
-int findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles);
+void findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles);
 int fetchCenters(Point2f centers[], IplImage* frame);
 
 #endif
