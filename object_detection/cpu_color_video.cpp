@@ -1,6 +1,6 @@
 #include "cpu_color_video.hpp"
 #include <iostream>
-
+ 
 using namespace std;
 using namespace cv;
 
@@ -10,7 +10,6 @@ bool BY_RADIUS(Circle first, Circle second) {
 
 void findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles) {
 	int size = circles->size();
-	sort(circles->begin(), circles->end(), BY_RADIUS);
 	*num_objects = min(*num_objects, size);
 
 	for (int i = 1; i <= *num_objects; i++) {
@@ -20,7 +19,7 @@ void findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_
 
 int fetchCenters(Point2f centers[], IplImage *frame) {
 	IplImage *blobs = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
-	Mat temp_blobs, red_blobs, green_blobs, lower_red_blobs, upper_red_blobs;
+	Mat temp_blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
 	cvarrToMat(blobs).copyTo(temp_blobs);	
 
 	// Finding the color blobs (needs to be a colored image) using Inrange
@@ -53,22 +52,29 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 	red_count = 5, green_count = 5;
 	vector<Circle> key_red_circles(red_count), key_green_circles(green_count);
 
+	sort(red_circles.begin(), red_circles.end(), BY_RADIUS);
+	sort(green_circles.begin(), green_circles.end(), BY_RADIUS);
+
 	findLargest(&red_count, &red_circles, &key_red_circles);
 	findLargest(&green_count, &green_circles, &key_green_circles);
 	int total_count = red_count + green_count;
 
-	cout << "KEY RED CIRCLES" << endl;
-	for (int i = 0; i < red_count; i++) {
-		cout << "[(" << key_red_circles[i].center.x << ", " << key_red_circles[i].center.y << ")\t";
-		cout << key_red_circles[i].radius << "]\t";
+	cout << "\tKEY RED CIRCLES" << endl << "\t";
+	for (int i = 0; i < total_count; i++) {
+		if (key_red_circles[i].radius > 20) {
+			cout << "[(" << key_red_circles[i].center.x << ", " << key_red_circles[i].center.y << ")\t";
+			cout << key_red_circles[i].radius << "]\t";
+		}
 	}
 
 	cout << endl;
 
-	cout << "KEY GREEN CIRCLES" << endl;
-	for (int i = 0; i < green_count; i++) {
-		cout << "[(" << key_green_circles[i].center.x << ", " << key_green_circles[i].center.y << ")\t";
-		cout << key_green_circles[i].radius << "]\t";
+	cout << "\tKEY GREEN CIRCLES" << endl << "\t";
+	for (int i = 0; i < total_count; i++) {
+		if (key_green_circles[i].radius > 20) {
+			cout << "[(" << key_green_circles[i].center.x << ", " << key_green_circles[i].center.y << ")\t";
+			cout << key_green_circles[i].radius << "]\t";
+		}
 	}
 
 	cout << endl;

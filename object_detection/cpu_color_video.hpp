@@ -20,7 +20,26 @@ struct Circle {
 	Circle(Point2f c, float r) {
 		center = c;
 		radius = r;
-	}	
+	}
+
+	Circle(const Circle& other) {
+		center = other.center;
+		radius = other.radius;
+	}
+
+	Circle(Circle* other) {
+		center = other->center;
+		radius = other->radius;
+	}
+
+	Circle& operator=(const Circle& other) {
+		if (this != &other) {
+			center = other.center;
+			radius = other.radius;
+		}
+
+		return *this;
+	}
 };
 
 bool BY_RADIUS(Circle first, Circle second);
