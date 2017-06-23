@@ -1,5 +1,5 @@
-#ifndef CPU_COLOR_VIDEO_HPP
-#define CPU_COLOR_VIDEO_HPP
+#ifndef TRACK_CENTERS_HPP
+#define TRACK_CENTERS_HPP
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>

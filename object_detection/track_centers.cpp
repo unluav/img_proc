@@ -1,4 +1,4 @@
-#include "cpu_color_video.hpp"
+#include "track_centers.hpp"
 #include <iostream>
  
 using namespace std;
@@ -49,7 +49,7 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 		minEnclosingCircle((Mat) green_poly[i], green_circles[i].center, green_circles[i].radius);
 	}
 
-	red_count = 5, green_count = 5;
+/*	red_count = 5, green_count = 5;
 	vector<Circle> key_red_circles(red_count), key_green_circles(green_count);
 
 	sort(red_circles.begin(), red_circles.end(), BY_RADIUS);
@@ -93,5 +93,6 @@ int fetchCenters(Point2f centers[], IplImage *frame) {
 	}
 
 	// return number of detected objects
-	return total_count;
+	return total_count;*/
+	return 0;
 }
