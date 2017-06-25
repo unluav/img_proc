@@ -44,8 +44,8 @@ struct Circle {
 
 void countedBubbleSort(vector<Circle>* circles, int n);
 bool BY_RADIUS(Circle first, Circle second);
-void findBoundingCircles(Mat* frame, vector<vector<Point>>* contours, vector<vector<Point>>* poly, vector<Circle>* circles, Scalar color, bool draw_circles);
-void findLargestCircles(vector<Circle>* key_circles, vector<Circle>* circles, int n, bool draw_circles, Scalar color, Mat* frame);
-void fetchCenters(Mat* frame, vector<Point2f>* centers, int object_count);
+void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circles, bool draw_circles, Mat* frame, Scalar color);
+void findLargestCircles(vector<Circle>* key_circles, vector<Circle>* circles, int n, bool draw_circles, Mat* frame, Scalar color);
+void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count);
 
 #endif

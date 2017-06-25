@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 
 	while (1) {
 		cap >> frame;
-		fetchCenters(&frame, &centers, object_count);
+		trackCenters(&frame, &centers, object_count);
 		imshow(argv[1], frame);
 
 		cout << frame_count++ << endl;
