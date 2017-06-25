@@ -42,9 +42,10 @@ struct Circle {
 	}
 };
 
+void countedBubbleSort(vector<Circle>* circles, int n);
 bool BY_RADIUS(Circle first, Circle second);
-void findLargest(int* num_objects, vector<Circle>* circles, vector<Circle>* key_circles);
-void fetchCenters(Mat* frame);
-// int fetchCenters(Point2f centers[], IplImage* frame);
+void findBoundingCircles(Mat* frame, vector<vector<Point>>* contours, vector<vector<Point>>* poly, vector<Circle>* circles, Scalar color, bool draw_circles);
+void findLargestCircles(vector<Circle>* key_circles, vector<Circle>* circles, int n, bool draw_circles, Scalar color, Mat* frame);
+void fetchCenters(Mat* frame, vector<Point2f>* centers, int object_count);
 
 #endif

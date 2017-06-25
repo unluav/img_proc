@@ -19,14 +19,20 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	int frame_count = 1;
+	int frame_count = 1, object_count = 2;
 	Mat frame;
+	vector<Point2f> centers;
 
 	while (1) {
 		cap >> frame;
-		fetchCenters(&frame);
+		fetchCenters(&frame, &centers, object_count);
 		imshow(argv[1], frame);
-//		cout << frame_count++ << endl;
+
+		cout << frame_count++ << endl;
+		for (int i = 0; i < centers.size(); i++) {
+			cout << "\t(" << centers[i].x << ", " << centers[i].y << ")" << endl;
+		}
+
 		if (waitKey(30) >= 0) break;
 	}
 
