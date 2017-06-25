@@ -1,4 +1,4 @@
-// #include "track_centers.hpp"
+#include "track_centers.hpp"
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -24,8 +24,9 @@ int main(int argc, char** argv) {
 
 	while (1) {
 		cap >> frame;
+		fetchCenters(&frame);
 		imshow(argv[1], frame);
-		cout << frame_count++ << endl;
+//		cout << frame_count++ << endl;
 		if (waitKey(30) >= 0) break;
 	}
 
