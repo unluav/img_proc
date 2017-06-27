@@ -3,7 +3,7 @@
 
 #define     QUERY_FREQUENCY                 10                  //  Number of frames processed per second
 #define     MAX_SPEED_DISTANCE              100                 //  Defines the distance at which the suggested heading speed plateaus 
-#define     TEST_VIDEO_PATH                 'change.me'         //  NOTE: This will eventually go away when we implement live feed
+#define     TEST_VIDEO_PATH                 "change.me"         //  NOTE: This will eventually go away when we implement live feed
 #define     VID_FPS                         30                  //  NOTE: This will also go away
 
 #define     MAX(a,b)                        ( ( (a) > (b) ) ? (a) : (b) )
@@ -22,7 +22,7 @@ private:
     SuggestedHeading    sgtd_hdg            =   {.theta = 0, .speed = 0};
     bool                die                 =   false;
     bool                alive               =   false;
-    std::thread         t                   =   NULL
+    std::thread         t;
     static std::mutex   die_mtx;
     static std::mutex   heading_mtx;
 
