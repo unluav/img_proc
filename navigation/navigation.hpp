@@ -14,6 +14,8 @@
 #include    <thread>
 #include    <mutex>
 
+#include    "opencv2/core/core.hpp"
+
 typedef struct suggested_heading
 {
     double theta;
