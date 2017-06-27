@@ -3,6 +3,6 @@
 
 #include    "opencv2/core/core.hpp"
 
-int CenterTracking(Point2f Centers[],IplImage *frame );
+int CenterTracking(cv::Point2f Centers[],IplImage *frame );
 
 #endif
