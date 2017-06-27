@@ -11,7 +11,8 @@
 #define     SPEED_CALCULATION(conf,dist)    ((double) MAX(MAX_SPEED_DISTANCE, dist) / (double) MAX_SPEED_DISTANCE) * conf  //May need to change this, I can't remember what we agreed upon...
 #define     THETA_CALCULATION(pt)           ( tan( (double)(pt).x / (double)(pt).y ) )
 
-#include 	<thread>
+#include    <thread>
+#include    <mutex>
 
 typedef struct suggested_heading
 {
