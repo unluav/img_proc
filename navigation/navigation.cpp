@@ -69,7 +69,7 @@ Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
 }
 
 //DONE FOR NOW?
-void * Navigation::update_heading() {
+void * Navigation::_update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
@@ -104,14 +104,14 @@ void * Navigation::update_heading() {
         conf_arc.predictNextFrame(focused);
 
         // Update heading
-        heading_mtx.lock();
-        sgtd_hdg.speed = SPEED_CALCULATION(prediction.confidence, DIST_FROM_ORG(prediction.point))
-        sgtd_hdg.theta = THETA_CALCULATION(prediction.point)
-        heading_mtx.unlock();
+        _heading_mtx.lock();
+        _sgtd_hdg.speed = SPEED_CALCULATION(prediction.confidence, DIST_FROM_ORG(prediction.point))
+        _sgtd_hdg.theta = THETA_CALCULATION(prediction.point)
+        _heading_mtx.unlock();
 
-        die_mtx.lock();
+        _die_mtx.lock();
         __die = die;
-        die_mtx.unlock();
+        _die_mtx.unlock();
 
         this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
     }
@@ -127,7 +127,7 @@ void * Navigation::die() {
     die = true;
     die_mtx.unlock()
 
-    t.join();
+    _t.join();
     alive = false;
 
     return NULL;
@@ -137,7 +137,7 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!alive) {
-        t = thread(Navigation::update_heading)
+        _t = thread(Navigation::update_heading)
         alive = true;
     } else {
         printf("A navigation thread is already running, please kill it before spawning a new one.\n");
@@ -149,9 +149,9 @@ void * Navigation::start() {
 //DONE
 SuggestedHeading * Navigation::get_suggested_heading() {
     //Lock the mutex and make a deep copy of the suggested heading
-    heading_mtx.lock()
-    SuggestedHeading ret_val = { .theta = sgtd_hdg.theta, .speed = sgtd_hdg.speed }
-    heading_mtx.unlock()    
+    _heading_mtx.lock()
+    SuggestedHeading ret_val = { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed }
+    _heading_mtx.unlock()    
 
     return &ret_val;
 }

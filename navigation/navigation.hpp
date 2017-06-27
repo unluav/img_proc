@@ -22,14 +22,14 @@ typedef struct suggested_heading
 
 class Navigation {
 private:
-    SuggestedHeading    sgtd_hdg            =   {.theta = 0, .speed = 0};
-    bool                die                 =   false;
-    bool                alive               =   false;
-    std::thread         t;
-    static std::mutex   die_mtx;
-    static std::mutex   heading_mtx;
+    SuggestedHeading    _sgtd_hdg           =   {.theta = 0, .speed = 0};
+    bool                _die                =   false;
+    bool                _alive              =   false;
+    std::thread         _t;
+    static std::mutex   _die_mtx;
+    static std::mutex   _heading_mtx;
 
-    void *              update_heading();
+    void *              _update_heading();
 
 public:
     void *              die();
