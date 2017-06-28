@@ -1,6 +1,7 @@
 #ifndef TRACK_CENTERS_HPP
 #define TRACK_CENTERS_HPP
 
+#include <opencv2/gpu/gpu.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
@@ -42,10 +43,9 @@ struct Circle {
 	}
 };
 
-void countedBubbleSort(vector<Circle>* circles, int n);
 bool BY_RADIUS(Circle first, Circle second);
-void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circles, bool draw_circles, Mat* frame, Scalar color);
-void findLargestCircles(vector<Circle>* key_circles, vector<Circle>* circles, int n, bool draw_circles, Mat* frame, Scalar color);
+void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, bool draw_circ, Mat* frame, Scalar color);
+void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, bool draw_circ, Mat* frame, Scalar color);
 void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count);
 
 #endif
