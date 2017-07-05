@@ -71,7 +71,7 @@ Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
 }
 
 //DONE FOR NOW?
-void * Navigation::_update_heading() {
+static void * Navigation::_update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
@@ -139,7 +139,7 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
-        _t = new thread(Navigation::_update_heading);
+        _t = new thread(Navigation::_update_heading, this);
         _alive = true;
     } else {
         printf("A navigation thread is already running, please kill it before spawning a new one.\n");
