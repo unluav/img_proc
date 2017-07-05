@@ -129,7 +129,7 @@ void * Navigation::die() {
     _die = true;
     _die_mtx.unlock();
 
-    _t.join();
+    _t->join();
     _alive = false;
 
     return NULL;
