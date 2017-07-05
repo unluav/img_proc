@@ -112,7 +112,7 @@ void * Navigation::_update_heading() {
         _heading_mtx.unlock();
 
         _die_mtx.lock();
-        __die = die;
+        __die = _die;
         _die_mtx.unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
@@ -125,12 +125,12 @@ void * Navigation::_update_heading() {
 //DONE
 void * Navigation::die() {
     //Set kill flag and wait for the thread to spin down
-    die_mtx.lock();
-    die = true;
-    die_mtx.unlock();
+    _die_mtx.lock();
+    _die = true;
+    _die_mtx.unlock();
 
     _t.join();
-    alive = false;
+    _alive = false;
 
     return NULL;
 }
