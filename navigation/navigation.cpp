@@ -139,7 +139,7 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
-        _t = new thread(Navigation::_update_heading, this);
+        _t = new thread(&Navigation::_update_heading, this);
         _alive = true;
     } else {
         printf("A navigation thread is already running, please kill it before spawning a new one.\n");
