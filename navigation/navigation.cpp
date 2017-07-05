@@ -84,10 +84,10 @@ void * Navigation::_update_heading() {
     this_thread::sleep_for(chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
 
     IplImage * second_frame     =   query_image();
-    int second_frame_size       =   CenterTracking(second_frame_points, second_frame);
+    int second_frame_size       =   CenterTracking(second_frame_pts, second_frame);
 
-    ConfidenceArc conf_arc      =   new ConfidenceArc(first_frame_pts, second_frame_pts);
-    Prediction prediction       =   *conf_arc.getPrediction();
+    ConfidenceArc * conf_arc    =   new ConfidenceArc(first_frame_pts, second_frame_pts);
+    Prediction prediction       =   conf_arc->getPrediction();
 
 
     int size = 0;
@@ -103,19 +103,19 @@ void * Navigation::_update_heading() {
         focused = focusObject(&origin, centers, size);
 
         // Register points and get next prediction
-        conf_arc.predictNextFrame(focused);
+        conf_arc->predictNextFrame(focused);
 
         // Update heading
         _heading_mtx.lock();
-        _sgtd_hdg.speed = SPEED_CALCULATION(prediction.confidence, DIST_FROM_ORG(prediction.point))
-        _sgtd_hdg.theta = THETA_CALCULATION(prediction.point)
+        _sgtd_hdg.speed = SPEED_CALCULATION(prediction.confidence, DIST_FROM_ORG(prediction.point));
+        _sgtd_hdg.theta = THETA_CALCULATION(prediction.point);
         _heading_mtx.unlock();
 
         _die_mtx.lock();
         __die = die;
         _die_mtx.unlock();
 
-        this_thread::sleep_for (chrono::seconds(1.0 / QUERY_FREQUENCY));
+        this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
     }
 
     //CLEAN UP RESOURECES, RETURN
@@ -125,9 +125,9 @@ void * Navigation::_update_heading() {
 //DONE
 void * Navigation::die() {
     //Set kill flag and wait for the thread to spin down
-    die_mtx.lock()
+    die_mtx.lock();
     die = true;
-    die_mtx.unlock()
+    die_mtx.unlock();
 
     _t.join();
     alive = false;
@@ -139,7 +139,7 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!alive) {
-        _t = thread(Navigation::update_heading)
+        _t = thread(Navigation::update_heading);
         alive = true;
     } else {
         printf("A navigation thread is already running, please kill it before spawning a new one.\n");
@@ -151,9 +151,9 @@ void * Navigation::start() {
 //DONE
 SuggestedHeading * Navigation::get_suggested_heading() {
     //Lock the mutex and make a deep copy of the suggested heading
-    _heading_mtx.lock()
+    _heading_mtx.lock();
     SuggestedHeading ret_val = { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed }
-    _heading_mtx.unlock()    
+    _heading_mtx.unlock();
 
     return &ret_val;
 }
