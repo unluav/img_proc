@@ -25,7 +25,7 @@ private:
     SuggestedHeading    _sgtd_hdg           =   {.theta = 0, .speed = 0};
     bool                _die                =   false;
     bool                _alive              =   false;
-    static std::thread  _t;
+    std::thread *       _t;
     static std::mutex   _die_mtx;
     static std::mutex   _heading_mtx;
 
