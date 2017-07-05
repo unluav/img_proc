@@ -35,7 +35,7 @@ using namespace cv;
 IplImage * query_image() {
     //TODO: Replace this w/ live feed
     CvCapture * video = cvCaptureFromFile( (TEST_VIDEO_PATH) );
-    
+
     //Skip a number of frames based on the desired sampling frequency, loop video if necessary
     double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
     if (fNum < 0)   //Hit end of video
@@ -79,12 +79,12 @@ void * Navigation::_update_heading() {
     Point2f second_frame_pts[25];
 
     IplImage * first_frame      =   query_image();
-    int first_frame_size        =   CenterTracking(first_frame_points, first_frame)
+    int first_frame_size        =   CenterTracking(first_frame_pts, first_frame);
 
     this_thread::sleep_for(chrono::seconds(1.0 / QUERY_FREQUENCY));
 
     IplImage * second_frame     =   query_image();
-    int second_frame_size       =   CenterTracking(second_frame_points, second_frame)
+    int second_frame_size       =   CenterTracking(second_frame_points, second_frame);
 
     ConfidenceArc conf_arc      =   new ConfidenceArc(first_frame_pts, second_frame_pts);
     Prediction prediction       =   *conf_arc.getPrediction();
