@@ -139,7 +139,7 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
-        _t = thread(Navigation::update_heading);
+        _t = thread(Navigation::_update_heading);
         _alive = true;
     } else {
         printf("A navigation thread is already running, please kill it before spawning a new one.\n");
@@ -152,7 +152,7 @@ void * Navigation::start() {
 SuggestedHeading * Navigation::get_suggested_heading() {
     //Lock the mutex and make a deep copy of the suggested heading
     _heading_mtx.lock();
-    SuggestedHeading ret_val = { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed };
+    SuggestedHeading ret_val = new SuggestedHeading { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed };
     _heading_mtx.unlock();
 
     return &ret_val;
