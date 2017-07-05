@@ -24,6 +24,8 @@
 #include "../object_detection/cpu_color_video.hpp"
 #include "../object_tracking/conf_arc.hpp"
 
+#include "../object_detection/video_player/videoPlayer.hpp"
+
 
 using namespace std;
 using namespace cv;
@@ -32,8 +34,8 @@ using namespace cv;
 //  This will be the main method that needs to change when we swap over to a live feed
 IplImage * query_image() {
     //TODO: Replace this w/ live feed
-    static VideoPlayer * videoPlayer = cvCaptureFromFile(TEST_VIDEO_PATH);
-
+    CvCapture * video = cvCaptureFromFile( (TEST_VIDEO_PATH) );
+    
     //Skip a number of frames based on the desired sampling frequency, loop video if necessary
     double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
     if (fNum < 0)   //Hit end of video
