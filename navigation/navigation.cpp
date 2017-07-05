@@ -71,7 +71,7 @@ Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
 }
 
 //DONE FOR NOW?
-static void * Navigation::_update_heading() {
+void * Navigation::_update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
