@@ -1,4 +1,6 @@
 #include "object_tracking/conf_arc.hpp"
+#include "navigation/navigation.hpp"
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
@@ -26,26 +28,14 @@ Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
 }
 
 int main(int argc, char** argv) {
-	Point2f centers[25];
-	ConfidenceArc arc;
-	Prediction* pred = arc.getPrediction();
-	int size = 0;
+	Navigation navigation = new Navigation();
+	navigation.start();
 
-	CvCapture* feed(0);
-	IplImage* frame = cvQueryFrame(feed);
-	Point2f origin((double) frame->width / 2, (double) frame->height / 2);
+	SuggestedHeading hdg = new SuggestedHeading();
+	navigation.get_suggested_heading( &hdg );
+	printf('Heading:\nTheta - %1f\nSpeed - %2f\n', hdg.theta, hdg.speed);
 
-	while (frame != NULL) {
-		size = CenterTracking(centers, frame);
-		Point2f* focused = focusObject(&origin, centers, size);
-		arc.predictNextFrame(focused);
-
-		// TODO: echo proper movement commands to embedded system
-		Point2f move(pred->point.x - origin.x, pred->point.y - origin.y);
-		double conf = pred->confidence;
-
-		frame = cvQueryFrame(feed);
-	}
+	navigation.die();
 
 	return 0;
 }
