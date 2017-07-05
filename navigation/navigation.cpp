@@ -81,7 +81,7 @@ void * Navigation::_update_heading() {
     IplImage * first_frame      =   query_image();
     int first_frame_size        =   CenterTracking(first_frame_pts, first_frame);
 
-    this_thread::sleep_for(chrono::seconds(1.0 / QUERY_FREQUENCY));
+    this_thread::sleep_for(chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
 
     IplImage * second_frame     =   query_image();
     int second_frame_size       =   CenterTracking(second_frame_points, second_frame);
