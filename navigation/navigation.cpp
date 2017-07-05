@@ -87,7 +87,7 @@ void * Navigation::_update_heading() {
     int second_frame_size       =   CenterTracking(second_frame_pts, second_frame);
 
     ConfidenceArc * conf_arc    =   new ConfidenceArc(first_frame_pts, second_frame_pts);
-    Prediction prediction       =   conf_arc->getPrediction();
+    Prediction * prediction     =   conf_arc->getPrediction();
 
 
     int size = 0;
@@ -107,8 +107,8 @@ void * Navigation::_update_heading() {
 
         // Update heading
         _heading_mtx.lock();
-        _sgtd_hdg.speed = SPEED_CALCULATION(prediction.confidence, DIST_FROM_ORG(prediction.point));
-        _sgtd_hdg.theta = THETA_CALCULATION(prediction.point);
+        _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
+        _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
         _heading_mtx.unlock();
 
         _die_mtx.lock();
@@ -152,7 +152,7 @@ void * Navigation::start() {
 SuggestedHeading * Navigation::get_suggested_heading() {
     //Lock the mutex and make a deep copy of the suggested heading
     _heading_mtx.lock();
-    SuggestedHeading ret_val = { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed }
+    SuggestedHeading ret_val = { .theta = _sgtd_hdg.theta, .speed = _sgtd_hdg.speed };
     _heading_mtx.unlock();
 
     return &ret_val;
