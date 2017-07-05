@@ -34,7 +34,7 @@ private:
 public:
     void *              die();
     void *              start();
-    SuggestedHeading *  get_suggested_heading();
+    SuggestedHeading *  get_suggested_heading( SuggestedHeading * sgst_hdg_buf );
 
 } nav;
 

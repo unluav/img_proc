@@ -149,7 +149,7 @@ void * Navigation::start() {
 }
 
 //DONE
-SuggestedHeading * Navigation::get_suggested_heading(SuggestedHeading * sgst_hdg_buf) {
+SuggestedHeading * Navigation::get_suggested_heading( SuggestedHeading * sgst_hdg_buf ) {
     //Lock the mutex and make a deep copy of the suggested heading
     _heading_mtx.lock();
     sgst_hdg_buf->theta = _sgtd_hdg.theta;
