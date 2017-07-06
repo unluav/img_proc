@@ -113,14 +113,14 @@ void * Navigation::_update_heading() {
         conf_arc->predictNextFrame(focused);
 
         // Update heading
-        _heading_mtx.lock();
+        _heading_mtx->lock();
         _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
         _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
-        _heading_mtx.unlock();
+        _heading_mtx->unlock();
 
-        _die_mtx.lock();
+        _die_mtx->lock();
         __die = this._die;
-        _die_mtx.unlock();
+        _die_mtx->unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
     }
@@ -132,9 +132,9 @@ void * Navigation::_update_heading() {
 //DONE
 void * Navigation::die() {
     //Set kill flag and wait for the thread to spin down
-    _die_mtx.lock();
+    _die_mtx->lock();
     _die = true;
-    _die_mtx.unlock();
+    _die_mtx->unlock();
 
     _t->join();
     _alive = false;
@@ -160,10 +160,10 @@ void * Navigation::start() {
 //DONE
 SuggestedHeading * Navigation::get_suggested_heading( SuggestedHeading * sgst_hdg_buf ) {
     //Lock the mutex and make a deep copy of the suggested heading
-    _heading_mtx.lock();
+    _heading_mtx->lock();
     sgst_hdg_buf->theta = _sgtd_hdg.theta;
     sgst_hdg_buf->speed = _sgtd_hdg.speed;
-    _heading_mtx.unlock();
+    _heading_mtx->unlock();
 
     return sgst_hdg_buf;
 }
