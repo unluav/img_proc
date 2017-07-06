@@ -146,8 +146,8 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
-        _die_mtx = new mutex();
-        _heading_mtx = new mutex();
+        Navigation::_die_mtx = new mutex();
+        Navigation::_heading_mtx = new mutex();
         _t = new thread(&Navigation::_update_heading, this);
         _alive = true;
     } else {
