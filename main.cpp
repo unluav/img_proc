@@ -9,24 +9,6 @@
 using namespace std;
 using namespace cv;
 
-Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
-	int closest = 0;
-	Point2f diff(0, 0);
-	double min_dist = norm(diff);
-
-	for (int i = 0; i < size; i++) {
-		diff = Point2f(centers[i].x - origin->x, centers[i].y - origin->y);
-		double dist = norm(diff);
-
-		if (dist < min_dist) {
-			min_dist = dist;
-			closest = i;
-		}
-	}
-
-	return &centers[closest];
-}
-
 int main(int argc, char** argv) {
 	Navigation * navigation = new Navigation();
 	navigation->start();

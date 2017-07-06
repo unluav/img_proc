@@ -113,7 +113,7 @@ void * Navigation::_update_heading() {
         conf_arc->predictNextFrame(focused);
 
         // Update heading
-        _heading_mtx->lock();
+        this->_heading_mtx->lock();
         _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
         _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
         _heading_mtx->unlock();
