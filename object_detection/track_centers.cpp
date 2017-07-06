@@ -64,11 +64,10 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	vector<Circle> red_circ, green_circ, key_circ;
 	Scalar red(0, 0, 255), green(0, 255, 0);
 
-	bool draw_circ = true;
+	bool draw_circ = false;
 	findBoundingCircles(&red_contours, &red_circ, draw_circ, frame, red);
 	findBoundingCircles(&green_contours, &green_circ, draw_circ, frame, green);
 
-	draw_circ = false;
 	findLargestCircles(&key_circ, &red_circ, object_count, draw_circ, frame, red);
 	findLargestCircles(&key_circ, &green_circ, object_count, draw_circ, frame, green);
 

@@ -15,7 +15,7 @@ set(
 include_directories("/usr/local/cuda-8.0/include")
 include_directories(/usr/include/glib-2.0 /usr/include/libxml2 /usr/lib/aarch64-linux-gnu/glib-2.0/include/)
 
-add_library(FRM STATIC ../utilities/FrameRateMonitor.cpp)
+#add_library(FRM STATIC ../utilities/FrameRateMonitor.cpp)
 #add_executable( gpu_canny_edge_picture.exe gpu_canny_edge.cpp )
 #target_link_libraries( gpu_canny_edge_picture.exe ${OpenCV_LIBS} )
 #add_executable( cpu_color_video.exe cpu_color_video.cpp )
