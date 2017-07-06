@@ -47,7 +47,7 @@ void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, b
 	}
 }
 
-void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
+int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	Mat hsv_frame, blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
 	hsv_frame.copyTo(blobs);
@@ -79,4 +79,6 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	for (int i = 0; i < key_circ.size(); i++) {
 		centers->push_back(key_circ[i].center);
 	}
+
+	return key_circ.size();
 }

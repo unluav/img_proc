@@ -32,7 +32,7 @@ using namespace cv;
 
 //  Retrieves the frame that is currently being outputted by the camera.
 //  This will be the main method that needs to change when we swap over to a live feed
-Mat * query_image() {
+Mat query_image() {
     //TODO: Replace this w/ live feed
     // Open a video feed
     VideoCapture cap(TEST_VIDEO_PATH);
@@ -53,7 +53,7 @@ Mat * query_image() {
 }
 
 
-Point2f* focusObject(Point2f* origin, Point2f centers[]) {
+Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
     /*
      * This method takes an array of centers an returns the point that is closest to the 
      * given point (typically the center of the screen) 
@@ -64,7 +64,6 @@ Point2f* focusObject(Point2f* origin, Point2f centers[]) {
     Point2f diff(0, 0);
     double min_dist = norm(diff);
 
-    int size = sizeof(centers)/sizeof(*centers);
     for (int i = 0; i < size; i++) {
         diff = Point2f(centers[i].x - origin->x, centers[i].y - origin->y);
         double dist = norm(diff);
@@ -107,8 +106,8 @@ void * Navigation::_update_heading() {
     while(!__die) {
 
         // Get current closest point
-        trackCenters(query_image(), centers, OBJECT_COUNT);
-        focused = focusObject(&origin, &centers[0]);
+        int size = trackCenters(query_image(), centers, OBJECT_COUNT);
+        focused = focusObject(&origin, &centers[0], size);
 
         // Register points and get next prediction
         conf_arc->predictNextFrame(focused);
