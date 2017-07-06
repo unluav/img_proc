@@ -38,7 +38,6 @@ Mat query_image() {
     VideoCapture cap(TEST_VIDEO_PATH);
     if (!cap.isOpened()) {
         cout << "ERROR: Unable to open video file" << endl;
-        return NULL;
     }
 
     //Skip a number of frames based on the desired sampling frequency, loop video if necessary
@@ -86,12 +85,12 @@ void * Navigation::_update_heading() {
     vector<Point2f> second_frame_pts;
 
     Mat first_frame             =   query_image();
-    trackCenters(&first_frame, first_frame_pts, OBJECT_COUNT);
+    trackCenters(&first_frame, &first_frame_pts, OBJECT_COUNT);
 
     this_thread::sleep_for(chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
 
     Mat second_frame            =   query_image();
-    trackCenters(&second_frame, second_frame_pts, OBJECT_COUNT);
+    trackCenters(&second_frame, &second_frame_pts, OBJECT_COUNT);
 
     ConfidenceArc * conf_arc    =   new ConfidenceArc(&first_frame_pts[0], &second_frame_pts[0]);
     Prediction * prediction     =   conf_arc->getPrediction();
@@ -106,7 +105,7 @@ void * Navigation::_update_heading() {
     while(!__die) {
 
         // Get current closest point
-        int size = trackCenters(query_image(), centers, OBJECT_COUNT);
+        int size = trackCenters(query_image(), &centers, OBJECT_COUNT);
         focused = focusObject(&origin, &centers[0], size);
 
         // Register points and get next prediction
