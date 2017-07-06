@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 2.8)
-project( navigation_logic )
+project( image_proc )
 set( CMAKE_C_FLAGS "-Wall -g" )
 set( CMAKE_CXX_FLAGS "-std=c++11" )
 find_package( OpenCV REQUIRED )
 add_library( FRM STATIC utilities/FrameRateMonitor.cpp )
-add_executable( main.exe main.cpp navigation/navigation.cpp object_detection/track_centers.cpp object_tracking/conf_arc.cpp )
-target_link_libraries( main.exe ${OpenCV_LIBS} )
+add_executable(
+        main
+        main.cpp
+        navigation/navigation.cpp
+        object_detection/track_centers.cpp
+        object_tracking/conf_arc.cpp
+)
+target_link_libraries( main ${OpenCV_LIBS} )
 #add_executable( cpu_color_video.exe cpu_color_video.cpp )
 #target_link_libraries( cpu_color_video.exe ${OpenCV_LIBS} )
 #add_executable( objectqueue.exe objectqueue.cpp )

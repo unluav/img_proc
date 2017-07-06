@@ -119,7 +119,7 @@ void * Navigation::_update_heading() {
         _heading_mtx.unlock();
 
         _die_mtx.lock();
-        __die = _die;
+        __die = this._die;
         _die_mtx.unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
@@ -146,6 +146,8 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
+        _die_mtx = new mutex();
+        _heading_mtx = new mutex();
         _t = new thread(&Navigation::_update_heading, this);
         _alive = true;
     } else {

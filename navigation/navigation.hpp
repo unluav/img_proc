@@ -27,8 +27,8 @@ private:
     bool                _die                =   false;
     bool                _alive              =   false;
     std::thread *       _t;
-    static std::mutex   _die_mtx;
-    static std::mutex   _heading_mtx;
+    static std::mutex * _die_mtx;
+    static std::mutex * _heading_mtx;
 
     void *              _update_heading();
 
