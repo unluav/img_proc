@@ -106,7 +106,7 @@ void * Navigation::_update_heading() {
 
         // Get current closest point
         Mat img = query_image();
-        int size = trackCenters(&image, &centers, OBJECT_COUNT);
+        int size = trackCenters(&img, &centers, OBJECT_COUNT);
         focused = focusObject(&origin, &centers[0], size);
 
         // Register points and get next prediction
