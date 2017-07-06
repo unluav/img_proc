@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 
 	SuggestedHeading * hdg = new SuggestedHeading();
 	navigation->get_suggested_heading( hdg );
-	printf('Heading:\nTheta - %1f\nSpeed - %2f\n', hdg->theta, hdg->speed);
+	printf('Heading:\nTheta - %f\nSpeed - %f\n', hdg->theta, hdg->speed);
 
 	navigation->die();
 
