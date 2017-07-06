@@ -18,13 +18,13 @@
 #include <mutex>
 #include <chrono>
 
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/core/core.hpp"
-#include "../object_detection/cpu_color_video.hpp"
-#include "../object_tracking/conf_arc.hpp"
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/opencv.hpp>
 
-#include "../object_detection/video_player/videoPlayer.hpp"
+#include "../object_detection/track_centers.hpp"
+#include "../object_tracking/conf_arc.hpp"
 
 
 using namespace std;
@@ -32,21 +32,28 @@ using namespace cv;
 
 //  Retrieves the frame that is currently being outputted by the camera.
 //  This will be the main method that needs to change when we swap over to a live feed
-IplImage * query_image() {
+Mat * query_image() {
     //TODO: Replace this w/ live feed
-    CvCapture * video = cvCaptureFromFile( (TEST_VIDEO_PATH) );
+    // Open a video feed
+    VideoCapture cap(argv[1]);
+    if (!cap.isOpened()) {
+        cout << "ERROR: Unable to open video file" << endl;
+        return 1;
+    }
 
     //Skip a number of frames based on the desired sampling frequency, loop video if necessary
-    double fNum = cvGetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
+    double fNum = VideoCapture::get(video, CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
     if (fNum < 0)   //Hit end of video
         fNum = 0;
-    cvSetCaptureProperty(video, CV_CAP_PROP_POS_FRAMES,fNum);
-    
-    return cvQueryFrame(video);
+    VideoCapture::set(video, CV_CAP_PROP_POS_FRAMES,fNum);
+
+    Mat frame;
+    VideoCapture::read(frame);
+    return frame;
 }
 
 
-Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
+Point2f* focusObject(Point2f* origin, Point2f centers[]) {
     /*
      * This method takes an array of centers an returns the point that is closest to the 
      * given point (typically the center of the screen) 
@@ -57,6 +64,7 @@ Point2f* focusObject(Point2f* origin, Point2f centers[], int size) {
     Point2f diff(0, 0);
     double min_dist = norm(diff);
 
+    int size = sizeof(centers)/sizeof(*centers);
     for (int i = 0; i < size; i++) {
         diff = Point2f(centers[i].x - origin->x, centers[i].y - origin->y);
         double dist = norm(diff);
@@ -75,23 +83,23 @@ void * Navigation::_update_heading() {
     bool __die = false;     //Local flag var I use to get around scope issues, may change later
 
     //Snag first two frames for ConfidenceArc instantiation (May be unecessary, but I wanted to)
-    Point2f first_frame_pts[25];
-    Point2f second_frame_pts[25];
+    vector<Point2f> first_frame_pts;
+    vector<Point2f> second_frame_pts;
 
-    IplImage * first_frame      =   query_image();
-    int first_frame_size        =   CenterTracking(first_frame_pts, first_frame);
+    Mat first_frame             =   query_image();
+    trackCenters(&first_frame, first_frame_pts, OBJECT_COUNT);
 
     this_thread::sleep_for(chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
 
-    IplImage * second_frame     =   query_image();
-    int second_frame_size       =   CenterTracking(second_frame_pts, second_frame);
+    Mat second_frame            =   query_image();
+    trackCenters(&second_frame, second_frame_pts, OBJECT_COUNT);
 
-    ConfidenceArc * conf_arc    =   new ConfidenceArc(first_frame_pts, second_frame_pts);
+    ConfidenceArc * conf_arc    =   new ConfidenceArc(&first_frame_pts[0], &second_frame_pts[0]);
     Prediction * prediction     =   conf_arc->getPrediction();
 
 
     int size = 0;
-    Point2f centers[25];
+    vector<Point2f> centers;
     Point2f * focused = NULL;
     Point2f origin((double) first_frame->width / 2, (double) first_frame->height / 2);
 
@@ -99,8 +107,8 @@ void * Navigation::_update_heading() {
     while(!__die) {
 
         // Get current closest point
-        size = CenterTracking(centers, query_image());
-        focused = focusObject(&origin, centers, size);
+        trackCenters(query_image(), centers, OBJECT_COUNT);
+        focused = focusObject(&origin, &centers[0]);
 
         // Register points and get next prediction
         conf_arc->predictNextFrame(focused);
