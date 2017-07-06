@@ -23,6 +23,8 @@ class ConfidenceArc {
 		Prediction* getPrediction();
 		std::vector<double>* getDistanceErrors();
 		std::vector<double>* getAngleErrors();
+		cv::Point2f* getPrevious();
+		cv::Point2f* getCurrent();
 		void predictNextFrame(cv::Point2f* current);
 		static void predictNextFrame(std::vector<cv::Point2f>* centers, std::vector<ConfidenceArc>* arcs);
 
@@ -33,11 +35,11 @@ class ConfidenceArc {
 		Prediction prediction;
 
 		void construct(cv::Point2f* prev, cv::Point2f* curr);
-		std::pair<double, double> calculateStats(std::vector<double>* collection, int length);
+		std::pair<double, double> calcStats(std::vector<double>* collection, int length);
 		double sampleError(std::pair<double, double>* stats);
 		void recordError();
 		void predictNext();
-		double calculateConfidence();
+		double calcConf();
 };
 
 #endif

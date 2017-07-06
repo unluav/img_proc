@@ -1,5 +1,4 @@
 #include "track_centers.hpp"
-#include <iostream>
 
 using namespace std;
 using namespace cv;
@@ -33,7 +32,7 @@ void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, 
 	}
 }
 
-void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, bool draw_circ, Scalar color, Mat* frame) {
+void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, bool draw_circ, Mat* frame, Scalar color) {
 	int size = circ->size(), circ_count = min(size, n), circ_thickness = 3, line_type = 8, index;
 	sort(circ->begin(), circ->end(), BY_RADIUS);
 
@@ -62,7 +61,6 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	findContours(red_blobs, red_contours, red_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	findContours(green_blobs, green_contours, green_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-	int red_count = red_contours.size(), green_count = green_contours.size();
 	vector<Circle> red_circ, green_circ, key_circ;
 	Scalar red(0, 0, 255), green(0, 255, 0);
 
@@ -71,8 +69,8 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	findBoundingCircles(&green_contours, &green_circ, draw_circ, frame, green);
 
 	draw_circ = false;
-	findLargestCircles(&key_circ, &red_circ, object_count, draw_circ, red, frame);
-	findLargestCircles(&key_circ, &green_circ, object_count, draw_circ, green, frame);
+	findLargestCircles(&key_circ, &red_circ, object_count, draw_circ, frame, red);
+	findLargestCircles(&key_circ, &green_circ, object_count, draw_circ, frame, green);
 
 	centers->clear();
 

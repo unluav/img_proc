@@ -1,4 +1,5 @@
 #include "conf_arc.hpp"
+
 #define EPSILON 0.000001
 
 using namespace std;
@@ -54,10 +55,18 @@ vector<double>* ConfidenceArc::getAngleErrors() {
 	return &this->angle_errors;
 }
 
+Point2f* ConfidenceArc::getPrevious() {
+	return &this->prev;
+}
+
+Point2f* ConfidenceArc::getCurrent() {
+	return &this->curr;
+}
+
 // Returns the standard deviation and mean of a collection of doubles
 // Length dictates how far back along the path the calculation should consider
 // A length less than or eqaul to zero will use the whole path
-pair<double, double> ConfidenceArc::calculateStats(vector<double>* collection, int length) {
+pair<double, double> ConfidenceArc::calcStats(vector<double>* collection, int length) {
 	double mean = 0, variance = 0;
 	int size = collection->size();
 	length = length <= 0 ? size : min(length, size);
@@ -106,15 +115,15 @@ void ConfidenceArc::recordError() {
 
 // Straight-line predicts the next point
 void ConfidenceArc::predictNext() {
-	this->prediction = Prediction(2 * this->curr - this->prev, this->calculateConfidence());
+	this->prediction = Prediction(2 * this->curr - this->prev, this->calcConf());
 }
 
 // Calculates confidence in a prediction based on the last n points, given by length
-double ConfidenceArc::calculateConfidence() {
+double ConfidenceArc::calcConf() {
 	int length = 5;
 
-	pair<double, double> dist_stats = this->calculateStats(&this->dist_errors, length);
-	pair<double, double> angle_stats = this->calculateStats(&this->angle_errors, length);
+	pair<double, double> dist_stats = this->calcStats(&this->dist_errors, length);
+	pair<double, double> angle_stats = this->calcStats(&this->angle_errors, length);
 
 	double dist = norm(this->curr - this->prev) + EPSILON;
 	double dist_error = this->sampleError(&dist_stats) + EPSILON;
