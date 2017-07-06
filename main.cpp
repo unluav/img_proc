@@ -31,9 +31,9 @@ int main(int argc, char** argv) {
 	Navigation * navigation = new Navigation();
 	navigation->start();
 
-	SuggestedHeading hdg = new SuggestedHeading();
-	navigation->get_suggested_heading( &hdg );
-	printf('Heading:\nTheta - %1f\nSpeed - %2f\n', hdg.theta, hdg.speed);
+	SuggestedHeading * hdg = new SuggestedHeading();
+	navigation->get_suggested_heading( hdg );
+	printf('Heading:\nTheta - %1f\nSpeed - %2f\n', hdg->theta, hdg->speed);
 
 	navigation->die();
 
