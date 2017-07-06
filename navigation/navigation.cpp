@@ -113,14 +113,14 @@ void * Navigation::_update_heading() {
         conf_arc->predictNextFrame(focused);
 
         // Update heading
-        Navigation::_heading_mtx->lock();
-        _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
-        _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
-        Navigation::_heading_mtx->unlock();
+       _heading_mtx->lock();
+       _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
+       _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
+       _heading_mtx->unlock();
 
-        Navigation::_die_mtx->lock();
-        __die = this->_die;
-        Navigation::_die_mtx->unlock();
+        _die_mtx->lock();
+        __die = _die;
+        _die_mtx->unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
     }
@@ -146,8 +146,8 @@ void * Navigation::die() {
 void * Navigation::start() {
     //Spin up the thread and set property
     if (!_alive) {
-        Navigation::_die_mtx = new mutex();
-        Navigation::_heading_mtx = new mutex();
+        _die_mtx = new mutex();
+        _heading_mtx = new mutex();
         _t = new thread(&Navigation::_update_heading, this);
         _alive = true;
     } else {
