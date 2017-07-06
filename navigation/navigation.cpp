@@ -35,20 +35,20 @@ using namespace cv;
 Mat * query_image() {
     //TODO: Replace this w/ live feed
     // Open a video feed
-    VideoCapture cap(argv[1]);
+    VideoCapture cap(TEST_VIDEO_PATH);
     if (!cap.isOpened()) {
         cout << "ERROR: Unable to open video file" << endl;
-        return 1;
+        return NULL;
     }
 
     //Skip a number of frames based on the desired sampling frequency, loop video if necessary
-    double fNum = VideoCapture::get(video, CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
+    double fNum = cap.get(CV_CAP_PROP_POS_FRAMES) + ( VID_FPS / QUERY_FREQUENCY ) ;
     if (fNum < 0)   //Hit end of video
         fNum = 0;
-    VideoCapture::set(video, CV_CAP_PROP_POS_FRAMES,fNum);
+    cap.set(CV_CAP_PROP_POS_FRAMES,fNum);
 
     Mat frame;
-    VideoCapture::read(frame);
+    cap.read(frame);
     return frame;
 }
 
