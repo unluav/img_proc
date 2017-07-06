@@ -119,7 +119,7 @@ void * Navigation::_update_heading() {
         _heading_mtx->unlock();
 
         _die_mtx->lock();
-        __die = this._die;
+        __die = _die;
         _die_mtx->unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
