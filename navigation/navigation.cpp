@@ -99,13 +99,13 @@ void * Navigation::_update_heading() {
     int size = 0;
     vector<Point2f> centers;
     Point2f * focused = NULL;
-    Point2f origin((double) first_frame->width / 2, (double) first_frame->height / 2);
+    Point2f origin((double) first_framewidth / 2, (double) first_frameheight / 2);
 
 
     while(!__die) {
 
         // Get current closest point
-        int size = trackCenters(query_image(), &centers, OBJECT_COUNT);
+        int size = trackCenters(&query_image(), &centers, OBJECT_COUNT);
         focused = focusObject(&origin, &centers[0], size);
 
         // Register points and get next prediction
