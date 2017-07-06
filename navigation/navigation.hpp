@@ -27,8 +27,8 @@ private:
     bool                _die                =   false;
     bool                _alive              =   false;
     std::thread *       _t;
-    std::mutex * _die_mtx;
-    std::mutex * _heading_mtx;
+    std::mutex *        _die_mtx;
+    std::mutex *        _heading_mtx;
 
     void *              _update_heading();
 
@@ -37,6 +37,6 @@ public:
     void *              start();
     SuggestedHeading *  get_suggested_heading( SuggestedHeading * sgst_hdg_buf );
 
-} nav;
+};
 
 #endif
