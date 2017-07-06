@@ -29,10 +29,12 @@ ConfidenceArc::ConfidenceArc(Point2f* previous, Point2f* current) {
 void ConfidenceArc::construct(Point2f* previous, Point2f* current) {
 	this->path.push_back(*previous);
 	this->path.push_back(*current);
-	this->distanceErrors.push_back(0.0);
-	this->distanceErrors.push_back(0.0);
-	this->angleErrors.push_back(M_PI);
-	this->angleErrors.push_back(M_PI);
+	this->prev = *previous;
+	this->curr = *current;
+	this->dist_errors.push_back(0.0);
+	this->dist_errors.push_back(0.0);
+	this->angle_errors.push_back(M_PI);
+	this->angle_errors.push_back(M_PI);
 	this->predictNext();
 }
 
@@ -45,11 +47,11 @@ Prediction* ConfidenceArc::getPrediction() {
 }
 
 vector<double>* ConfidenceArc::getDistanceErrors() {
-	return &this->distanceErrors;
+	return &this->dist_errors;
 }
 
 vector<double>* ConfidenceArc::getAngleErrors() {
-	return &this->angleErrors;
+	return &this->angle_errors;
 }
 
 // Returns the standard deviation and mean of a collection of doubles
@@ -79,6 +81,8 @@ double ConfidenceArc::sampleError(pair<double, double>* stats) {
 
 void ConfidenceArc::predictNextFrame(Point2f* current) {
 	this->path.push_back(*current);
+	this->prev = this->curr;
+	this->curr = *current;
 	this->recordError();
 	this->predictNext();
 }
@@ -92,38 +96,32 @@ void ConfidenceArc::predictNextFrame(vector<Point2f>* centers, vector<Confidence
 // Given the current recorded position of the roomba, calculates how incorrect
 // the prediction was and pushes that to the histories of errors
 void ConfidenceArc::recordError() {
-	Point2f previous = this->path[this->path.size() - 2];
-	Point2f current = this->path[this->path.size() - 1] - previous;
-	Point2f predicted = this->prediction.point - previous;
-	Point2f error = predicted - current;
+	Point2f current = this->curr - this->prev;
+	Point2f pred = this->prediction.point - this->prev;
+	Point2f error = pred - current;
 
-	this->distanceErrors.push_back(norm(predicted) - norm(current));
-	this->angleErrors.push_back(atan2(error.y, error.x));
+	this->dist_errors.push_back(norm(pred) - norm(current));
+	this->angle_errors.push_back(atan2(error.y, error.x));
 }
 
 // Straight-line predicts the next point
 void ConfidenceArc::predictNext() {
-	Point2f previous = this->path[this->path.size() - 2];
-	Point2f current = this->path[this->path.size() - 1];
-	
-	this->prediction = Prediction(2 * current - previous, this->calculateConfidence());
+	this->prediction = Prediction(2 * this->curr - this->prev, this->calculateConfidence());
 }
 
 // Calculates confidence in a prediction based on the last n points, given by length
 double ConfidenceArc::calculateConfidence() {
 	int length = 5;
 
-	Point2f previous = this->path[this->path.size() - 2];
-	Point2f current = this->path[this->path.size() - 1];
-	pair<double, double> distanceStats = this->calculateStats(&this->distanceErrors, length);
-	pair<double, double> angleStats = this->calculateStats(&this->angleErrors, length);
+	pair<double, double> dist_stats = this->calculateStats(&this->dist_errors, length);
+	pair<double, double> angle_stats = this->calculateStats(&this->angle_errors, length);
 
-	double distance = norm(current - previous) + EPSILON;
-	double distanceError = this->sampleError(&distanceStats) + EPSILON;
-	double angleError = this->sampleError(&angleStats) + EPSILON;
+	double dist = norm(this->curr - this->prev) + EPSILON;
+	double dist_error = this->sampleError(&dist_stats) + EPSILON;
+	double angle_error = this->sampleError(&angle_stats) + EPSILON;
 
-	double arcArea = 4 * angleError * distance * distanceError;
-	double circleArea = M_PI * pow(distance + distanceError, 2);
+	double arc_area = 4 * angle_error * dist * dist_error;
+	double circ_area = M_PI * pow(dist + dist_error, 2);
 
-	return 1 - arcArea / circleArea;
+	return 1 - arc_area / circ_area;
 }
