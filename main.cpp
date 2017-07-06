@@ -14,8 +14,11 @@ int main(int argc, char** argv) {
 	navigation->start();
 
 	SuggestedHeading * hdg = new SuggestedHeading();
-	navigation->get_suggested_heading( hdg );
-	printf("Heading:\nTheta - %f\nSpeed - %f\n", hdg->theta, hdg->speed);
+
+	while(true) {
+		navigation->get_suggested_heading( hdg );
+		printf("Heading:\nTheta - %f\nSpeed - %f\n", hdg->theta, hdg->speed);
+	}
 
 	navigation->die();
 
