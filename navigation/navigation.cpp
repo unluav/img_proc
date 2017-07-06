@@ -99,7 +99,7 @@ void * Navigation::_update_heading() {
     int size = 0;
     vector<Point2f> centers;
     Point2f * focused = NULL;
-    Point2f origin((double) first_frame.width / 2, (double) first_frame.height / 2);
+    Point2f origin((double) first_frame.rows / 2, (double) first_frame.cols / 2);
 
 
     while(!__die) {
