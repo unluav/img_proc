@@ -114,13 +114,13 @@ void * Navigation::_update_heading() {
 
         // Update heading
         this->_heading_mtx->lock();
-        _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
-        _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
-        _heading_mtx->unlock();
+        this->_sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
+        this->_sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
+        this->_heading_mtx->unlock();
 
-        _die_mtx->lock();
-        __die = _die;
-        _die_mtx->unlock();
+        this->_die_mtx->lock();
+        __die = this->_die;
+        this->_die_mtx->unlock();
 
         this_thread::sleep_for (chrono::milliseconds(1000 / (QUERY_FREQUENCY)));
     }
