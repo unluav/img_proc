@@ -49,7 +49,7 @@ Mat query_image() {
     Mat frame;
     ret, img = cap.read(frame);
 
-    imshow('stuff', img);
+    imshow("stuff", img);
     return frame;
 }
 
