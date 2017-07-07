@@ -17,7 +17,8 @@ int main(int argc, char** argv) {
 
 	while(true) {
 		navigation->get_suggested_heading( hdg );
-		printf("Heading:\nTheta - %f\nSpeed - %f\n", hdg->theta, hdg->speed);
+		printf("Heading:\nTheta - %f\nSpeed - %f\n\n", hdg->theta, hdg->speed);
+		this_thread::sleep_for(chrono::milliseconds(100));
 	}
 
 	navigation->die();
