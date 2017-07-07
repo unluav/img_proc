@@ -9,8 +9,9 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	if (argc < 1) {
+	if (argc < 2) {
 		cout << "USAGE: " << argv[0] << " VIDEO_FILE" << endl;
+		return 1;
 	}
 
 	VideoCapture cap(argv[1]);
