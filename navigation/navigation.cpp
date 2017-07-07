@@ -47,9 +47,9 @@ Mat query_image() {
     cap.set(CV_CAP_PROP_POS_FRAMES,fNum);
 
     Mat frame;
-    ret, img = cap.read(frame);
+    cap.read(frame);
 
-    imshow("stuff", img);
+    imshow("stuff", frame);
     return frame;
 }
 
