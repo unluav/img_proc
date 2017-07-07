@@ -15,9 +15,10 @@ int main(int argc, char** argv) {
 
 	SuggestedHeading * hdg = new SuggestedHeading();
 
+	int count = 1;
 	while(true) {
 		navigation->get_suggested_heading( hdg );
-		printf("Heading:\nTheta - %f\nSpeed - %f\n\n", hdg->theta, hdg->speed);
+		printf("Frame: %d\tHeading:\nTheta - %f\nSpeed - %f\n\n", count++, hdg->theta, hdg->speed);
 		this_thread::sleep_for(chrono::milliseconds(100));
 	}
 

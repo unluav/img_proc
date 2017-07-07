@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 
 	while (cap.read(frame)) {
 		trackCenters(&frame, &centers, object_count);
-//		imshow(argv[1], frame);
+		imshow(argv[1], frame);
 
 		cout << frame_count++ << endl;
 		for (int i = 0; i < centers.size(); i++) {
