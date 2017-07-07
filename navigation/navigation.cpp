@@ -116,7 +116,6 @@ void * Navigation::_update_heading() {
        _heading_mtx->lock();
        _sgtd_hdg.speed = SPEED_CALCULATION(prediction->confidence, DIST_FROM_ORG(prediction->point));
        _sgtd_hdg.theta = THETA_CALCULATION(prediction->point);
-        printf("X: %f, Y: %f\n\n", prediction->point.x, prediction->point.y);
        _heading_mtx->unlock();
 
         _die_mtx->lock();
