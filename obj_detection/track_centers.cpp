@@ -64,7 +64,7 @@ int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	vector<Circle> red_circ, green_circ, key_circ;
 	Scalar red(0, 0, 255), green(0, 255, 0);
 
-	bool draw_circ = false;
+	bool draw_circ = true;
 	findBoundingCircles(&red_contours, &red_circ, draw_circ, frame, red);
 	findBoundingCircles(&green_contours, &green_circ, draw_circ, frame, green);
 
