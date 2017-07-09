@@ -4,6 +4,10 @@
 using namespace std;
 using namespace cv;
 
+void sendToCtrl(Heading* head) {
+	// TODO: INSERT NEAT FUNCTION TO SEND HEADING TO FLIGHT CONTROLLER
+}
+
 void focusClosestObject(Point2f* closest, Point2f* origin, vector<Point2f>* centers) {
 	*closest = (*centers)[0];
 	Point2f diff = (*centers)[0] - *origin;
@@ -20,10 +24,10 @@ void focusClosestObject(Point2f* closest, Point2f* origin, vector<Point2f>* cent
 	}
 }
 
-void updateHeading(Heading* hdg, ConfidenceArc* arc) {
+void updateHeading(Heading* head, ConfidenceArc* arc) {
 	Point2f diff = *arc->getCurrent() - arc->getPrediction()->point;
 	int angle = (int) (atan2(diff.y, diff.x) / M_PI * 180);
 
-	hdg->magnitude = (int) (arc->getPrediction()->confidence * 250);
-	hdg->angle = angle > 0 ? angle : angle + 360;
+	head->magnitude = (int) (arc->getPrediction()->confidence * 250);
+	head->angle = (angle + 360) % 360;
 }

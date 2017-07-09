@@ -21,4 +21,5 @@ add_executable (
         obj_tracking/conf_arc.cpp
 )
 
+target_link_libraries ( main.exe FRM )
 target_link_libraries ( main.exe ${OpenCV_LIBS} )

@@ -1,23 +1,20 @@
 #include "nav/nav.hpp"
-#include <iostream>
+#include "utilities/FrameRateMonitor.h"
 #include <cstdio>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
+#define VIDEO_PATH "/uav_rsc/2roomba.mp4"
+
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	if (argc < 2) {
-		cout << "USAGE: " << argv[0] << " VIDEO_FILE" << endl;
-		return 1;
-	}
-
-	VideoCapture cap(argv[1]);
+	VideoCapture cap(VIDEO_PATH);
 	if (!cap.isOpened()) {
-		cout << "ERROR: Unable to open video file" << endl;
+		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
 		return 1;
 	}
 
@@ -31,28 +28,34 @@ int main(int argc, char** argv) {
 	Point2f* curr = arc.getCurrent();
 	Prediction* pred = arc.getPrediction();
 
-	Heading hdg;
+	Heading head;
 	int frame_count = 1, object_count = 1;
+	FrameRateMonitor frm;
+	frm.Start();
 
 	while (cap.read(frame)) {
-		imshow(argv[1], frame);
-
+		frm.MarkFrame();
 		trackCenters(&frame, &centers, object_count);
 		focusClosestObject(&closest, &origin, &centers);
 
-		printf("\n\n************************ FRAME %d ************************", frame_count++);
-		printf("\n\tPredicted    (%.1f, %.1f) [%.1f%%]", pred->point.x, pred->point.y, pred->confidence * 100);
+		printf("\n**************** FRAME %d ****************\n", frame_count++);
+		printf("    Predicted    (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 
 		arc.predictNextFrame(&closest);
-		updateHeading(&hdg, &arc);
+		updateHeading(&head, &arc);
+		sendToCtrl(&head);
 
-		printf("\n\tActual       (%.1f, %.1f)", curr->x, curr->y);
-		printf("\n\tPrediction   (%.1f, %.1f) [%.1f%%]", pred->point.x, pred->point.y, pred->confidence * 100);
-		printf("\n\tHeading      [M: %d, A: %d]", hdg.magnitude, hdg.angle);
+		printf("    Actual       (%.1f, %.1f)\n", curr->x, curr->y);
+		printf("    Prediction   (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
+		printf("    Heading      [M: %d, A: %d]\n", head.magnitude, head.angle);
 
+		if (argc == 2 && strcmp(argv[1], "-i") == 0) imshow(VIDEO_PATH, frame);
 		if (waitKey(30) >= 0) break;
 	}
 
 	printf("\n");
+	frm.Stop();
+	frm.DumpInfo();
+
 	return 0;
 }
