@@ -12,7 +12,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	VideoCapture cap(VIDEO_PATH);
+	VideoCapture cap("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
 	if (!cap.isOpened()) {
 		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
 		return 1;
