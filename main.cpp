@@ -6,13 +6,15 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-#define VIDEO_PATH "/uav_rsc/2roomba.mp4"
+#define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
 
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	VideoCapture cap("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
+	printf("WE FUCKIN STARTED");
+
+	VideoCapture cap(VIDEO_PATH);
 	if (!cap.isOpened()) {
 		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
 		return 1;
@@ -20,8 +22,8 @@ int main(int argc, char** argv) {
 
 	Mat frame;
 	cap.read(frame);
-	Point2f closest, origin(frame.size().width / 2, frame.size().height / 2);
-	vector<Point2f> centers;
+	Point2f origin(frame.size().width / 2, frame.size().height / 2), closest = origin;
+	vector<Point2f> centers(1);
 
 	ConfidenceArc arc;
 	arc.setBacktrace(2);
@@ -35,6 +37,7 @@ int main(int argc, char** argv) {
 
 	while (cap.read(frame)) {
 		frm.MarkFrame();
+	
 		trackCenters(&frame, &centers, object_count);
 		focusClosestObject(&closest, &origin, &centers);
 
@@ -42,7 +45,7 @@ int main(int argc, char** argv) {
 		printf("    Predicted    (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 
 		arc.predictNextFrame(&closest);
-		updateHeading(&head, &arc);
+		updateHeading(&head, &arc, &origin);
 		sendToCtrl(&head);
 
 		printf("    Actual       (%.1f, %.1f)\n", curr->x, curr->y);

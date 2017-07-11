@@ -12,4 +12,4 @@ struct Heading {
 
 void sendToCtrl(Heading* head);
 void focusClosestObject(cv::Point2f* closest, cv::Point2f* origin, std::vector<cv::Point2f>* centers);
-void updateHeading(Heading* head, ConfidenceArc* arc);
+void updateHeading(Heading* head, ConfidenceArc* arc, Point2f* origin);
