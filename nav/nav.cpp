@@ -32,3 +32,14 @@ void updateHeading(Heading* head, Prediction* pred, Point2f* origin) {
 	head->magnitude = (int) (250 * weighted_dist / norm(*origin)) % 250;
 	head->angle = (int) (360 + angle) % 360;
 }
+
+void averageHeadings(Heading* head, vector<Heading>* heads) {
+	int size = heads->size();
+	head->magnitude = 0;
+	head->angle = 0;
+
+	for (int i = 0; i < size; i++) {
+		head->magnitude += (*heads)[i].magnitude / size;
+		head->angle += (*heads)[i].angle / size;
+	}
+}
