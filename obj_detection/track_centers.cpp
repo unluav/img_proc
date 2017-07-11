@@ -51,9 +51,9 @@ int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
 	hsv_frame.copyTo(blobs);
 
-	inRange(blobs, Scalar(0, 150, 150), Scalar(25, 250, 250), lower_red_blobs);
-	inRange(blobs, Scalar(155, 70, 70), Scalar(180, 200, 200), upper_red_blobs);
-	inRange(blobs, Scalar(50, 80, 80), Scalar(130, 255, 255), green_blobs);
+	inRange(blobs, Scalar(170, 200, 200), Scalar(180, 255, 255), lower_red_blobs);
+	inRange(blobs, Scalar(0, 200, 200), Scalar(10, 255, 255), upper_red_blobs);
+	inRange(blobs, Scalar(50, 80, 80), Scalar(90, 255, 255), green_blobs);
 	bitwise_or(lower_red_blobs, upper_red_blobs, red_blobs);
 
 	vector<vector<Point>> red_contours, green_contours;
