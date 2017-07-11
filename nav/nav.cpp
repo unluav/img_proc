@@ -24,10 +24,10 @@ void focusClosestObject(Point2f* closest, Point2f* origin, vector<Point2f>* cent
 	}
 }
 
-void updateHeading(Heading* head, ConfidenceArc* arc, Point2f* origin) {
-	Point2f diff = *origin - arc->getPrediction()->point;
+void updateHeading(Heading* head, Prediction* pred, Point2f* origin) {
+	Point2f diff = *origin - pred->point;
 	double angle = atan2(diff.y, diff.x) / M_PI * 180;
-	double weighted_dist = arc->getPrediction()->confidence * norm(diff);
+	double weighted_dist = pred->confidence * norm(diff);
 
 	head->magnitude = (int) (250 * weighted_dist / norm(*origin)) % 250;
 	head->angle = (int) (360 + angle) % 360;

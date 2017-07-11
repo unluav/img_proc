@@ -12,8 +12,6 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	printf("WE FUCKIN STARTED");
-
 	VideoCapture cap(VIDEO_PATH);
 	if (!cap.isOpened()) {
 		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
