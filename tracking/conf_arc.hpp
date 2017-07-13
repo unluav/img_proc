@@ -16,12 +16,13 @@ struct Prediction {
 	cv::Point2f point;
 
 	Prediction(cv::Point2f pt, double conf, double rad, double rng);
-	setRange(double rng);
+	void setRange(double rng);
 };
 
 class ConfidenceArc {
 	public:
-		ConfidenceArc(cv::Point2f prev, cv::Point2f current, int num)
+		ConfidenceArc();
+		ConfidenceArc(cv::Point2f prev, cv::Point2f current, int num);
 		std::vector<cv::Point2f>* getPath();
 		Prediction* getPrediction();
 		std::vector<double>* getErrors();
@@ -41,7 +42,7 @@ class ConfidenceArc {
 
 		void recordError(cv::Point2f p1, cv::Point2f p2);
 		void predict();
-		cv::Point2f predictConfidence();
+		cv::Point2f predictPoint();
 		double predictRadius();
 		double predictConfidence();
 };

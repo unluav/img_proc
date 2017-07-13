@@ -3,7 +3,7 @@
 using namespace std;
 using namespace cv;
 
-Prediction::Prediction(Point2f pt(0.0f, 0.0f), double conf = 0, double rad = 0, double rng = DEF_RANGE) {
+Prediction::Prediction(Point2f pt = Point2f(0.0f, 0.0f), double conf = 0, double rad = 0, double rng = DEF_RANGE) {
 	this->point = pt;
 	this->confidence = conf;
 	this->radius = rad;
@@ -14,17 +14,32 @@ void Prediction::setRange(double rng) {
 	this->range = rng;
 }
 
-ConfidenceArc::ConfidenceArc(Point2f prev(0.0f, 0.0f), Point2f current(0.0f, 0.0f), int num = DEF_BACKTRACE) {
-	this->path.push_back(previous);
-	this->path.push_back(current);
-	this->prev = previous;
-	this->curr = current;
+ConfidenceArc::ConfidenceArc() {
+	Point2f prev(0.0f, 0.0f), curr(0.0f, 0.0f);
+	int num = DEF_BACKTRACE;
+	this->path.push_back(prev);
+	this->path.push_back(curr);
+	this->prev = prev;
+	this->curr = curr;
 	this->backtrace = num;
 
 	this->prediction = Prediction();
-	this->recordError(current, previous);
-	this->recordError(current, previous);
-	this->predictNext();
+	this->recordError(curr, prev);
+	this->recordError(curr, prev);
+	this->predict();
+}
+
+ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = Point2f(0.0f, 0.0f), int num = DEF_BACKTRACE) {
+	this->path.push_back(prev);
+	this->path.push_back(curr);
+	this->prev = prev;
+	this->curr = curr;
+	this->backtrace = num;
+
+	this->prediction = Prediction();
+	this->recordError(curr, prev);
+	this->recordError(curr, prev);
+	this->predict();
 }
 
 vector<Point2f>* ConfidenceArc::getPath() {
