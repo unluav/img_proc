@@ -26,7 +26,7 @@ void getNextFrame(vector<Point2f> centers, int frame) {
 }
 
 int main(int argc, char** argv) {
-	int obj_count = 10, frames = 10;
+	int obj_count = 1, frames = 3;
 	vector<Point2f> centers(obj_count);
 	vector<ConfidenceArc> arcs(obj_count);
 
