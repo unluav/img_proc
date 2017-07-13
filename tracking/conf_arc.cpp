@@ -4,13 +4,6 @@
 using namespace std;
 using namespace cv;
 
-Prediction::Prediction() {
-	this->point = Point2f(0.0f, 0.0f);
-	this->confidence = 0;
-	this->radius = 0;
-	this->range = DEF_RANGE;
-}
-
 Prediction::Prediction(Point2f pt = Point2f(0.0f, 0.0f), double conf = 0, double rad = 0, double rng = DEF_RANGE) {
 	this->point = pt;
 	this->confidence = conf;
@@ -36,7 +29,7 @@ ConfidenceArc::ConfidenceArc() {
 	this->prediction = Prediction();
 	this->predict();
 
-	printf("ConfidenceArc() {
+	printf(R"END(ConfidenceArc() {
 		prev => (%.1f, %.1f),
 		curr => (%.1f, %.1f),
 		backtrace => %d,
@@ -50,10 +43,10 @@ ConfidenceArc::ConfidenceArc() {
 			radius => %.3f,
 			range => %.3f
 		}
-	}", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
-		this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
-		this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-		this->prediction.radius, this->prediction.range);
+	})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
+	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
+	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
+	this->prediction.radius, this->prediction.range);
 }
 
 ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = Point2f(0.0f, 0.0f), int num = DEF_BACKTRACE) {
@@ -67,7 +60,7 @@ ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = 
 	this->prediction = Prediction();
 	this->predict();
 
-	printf("ConfidenceArc() {
+	printf(R"END(ConfidenceArc() {
 		prev => (%.1f, %.1f),
 		curr => (%.1f, %.1f),
 		backtrace => %d,
@@ -81,10 +74,10 @@ ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = 
 			radius => %.3f,
 			range => %.3f
 		}
-	}", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
-		this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
-		this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-		this->prediction.radius, this->prediction.range);
+	})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
+	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
+	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
+	this->prediction.radius, this->prediction.range);
 }
 
 vector<Point2f>* ConfidenceArc::getPath() {
@@ -139,13 +132,13 @@ void ConfidenceArc::predict() {
 	this->prediction.radius = this->predictRadius();
 	this->prediction.confidence = this->predictConfidence();
 
-	printf("predict() returns Prediction {
+	printf(R"END(predict() returns Prediction {
 		point => (%.1f, %.1f),
 		confidence => %.3f,
 		radius => %.3f,
 		range => %.3f
-	}", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-		this->prediction.radius, this->prediction.range);
+	})END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
+	this->prediction.radius, this->prediction.range);
 }
 
 // Calculates point of a prediction via linear approximation

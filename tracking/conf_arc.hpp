@@ -15,7 +15,6 @@ struct Prediction {
 	double confidence, radius, range;
 	cv::Point2f point;
 
-	Prediction();
 	Prediction(cv::Point2f pt, double conf, double rad, double rng);
 	void setRange(double rng);
 };
