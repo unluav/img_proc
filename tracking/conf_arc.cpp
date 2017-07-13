@@ -29,21 +29,22 @@ ConfidenceArc::ConfidenceArc() {
 	this->prediction = Prediction();
 	this->predict();
 
-	printf(R"END(ConfidenceArc() {
-		prev => (%.1f, %.1f),
-		curr => (%.1f, %.1f),
-		backtrace => %d,
-		path => {
-			0 => (%.1f, %.1f),
-			1 => (%.1f, %.1f)
-		},
-		prediction => {
-			point => (%.1f, %.1f),
-			confidence => %.3f,
-			radius => %.3f,
-			range => %.3f
-		}
-	})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
+	printf(R"END(
+ConfidenceArc() {
+	prev => (%.1f, %.1f),
+	curr => (%.1f, %.1f),
+	backtrace => %d,
+	path => {
+		0 => (%.1f, %.1f),
+		1 => (%.1f, %.1f)
+	},
+	prediction => {
+		point => (%.1f, %.1f),
+		confidence => %.3f,
+		radius => %.3f,
+		range => %.2f
+	}
+})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
 	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
 	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
 	this->prediction.radius, this->prediction.range);
@@ -60,21 +61,22 @@ ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = 
 	this->prediction = Prediction();
 	this->predict();
 
-	printf(R"END(ConfidenceArc() {
-		prev => (%.1f, %.1f),
-		curr => (%.1f, %.1f),
-		backtrace => %d,
-		path => {
-			0 => (%.1f, %.1f),
-			1 => (%.1f, %.1f)
-		},
-		prediction => {
-			point => (%.1f, %.1f),
-			confidence => %.3f,
-			radius => %.3f,
-			range => %.3f
-		}
-	})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
+	printf(R"END(
+ConfidenceArc() {
+	prev => (%.1f, %.1f),
+	curr => (%.1f, %.1f),
+	backtrace => %d,
+	path => {
+		0 => (%.1f, %.1f),
+		1 => (%.1f, %.1f)
+	},
+	prediction => {
+		point => (%.1f, %.1f),
+		confidence => %.3f,
+		radius => %.3f,
+		range => %.2f
+	}
+})END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
 	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
 	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
 	this->prediction.radius, this->prediction.range);
@@ -132,12 +134,13 @@ void ConfidenceArc::predict() {
 	this->prediction.radius = this->predictRadius();
 	this->prediction.confidence = this->predictConfidence();
 
-	printf(R"END(predict() returns Prediction {
-		point => (%.1f, %.1f),
-		confidence => %.3f,
-		radius => %.3f,
-		range => %.3f
-	})END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
+	printf(R"END(
+predict() returns Prediction {
+	point => (%.1f, %.1f),
+	confidence => %.3f,
+	radius => %.3f,
+	range => %.2f
+})END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
 	this->prediction.radius, this->prediction.range);
 }
 
