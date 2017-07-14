@@ -17,7 +17,7 @@ add_executable (
         main.exe
         main.cpp
         nav/nav.cpp
-        obj_detection/track_centers.cpp
+        detection/detect_objects.cpp
         tracking/conf_arc.cpp
 )
 

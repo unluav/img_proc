@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 	while (cap.read(frame)) {
 		frm.MarkFrame();
 	
-		trackCenters(&frame, &centers, object_count);
+		detectObjects(&frame, &centers, object_count);
 		focusClosestObject(&closest, &origin, &centers);
 
 		printf("\n**************** FRAME %d ****************\n", frame_count);

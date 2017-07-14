@@ -1,4 +1,4 @@
-#include "track_centers.hpp"
+#include "detect_objects.hpp"
 
 using namespace std;
 using namespace cv;
@@ -7,7 +7,7 @@ bool BY_RADIUS(Circle first, Circle second) {
 	return first.radius <= second.radius;
 }
 
-void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, bool draw_circ, Mat* frame, Scalar color) { 
+void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color) { 
 	int size = contours->size(), line_thickness = 1, circ_thickness = 3, line_type = 8;
 	float min_radius = 20; // in pixels
 	vector<vector<Point>> polygons(size);
@@ -22,17 +22,17 @@ void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, 
 		}
 	}
 
-	if (draw_circ) {
-		size = circ->size();
+B_CMT
+	size = circ->size();
 
-		for (int i = 0; i < size; i++) {
-			drawContours(*frame, polygons, i, color, line_thickness, line_type, vector<Vec4i>(), 0, Point());
-			circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, circ_thickness, line_type, 0);
-		}
+	for (int i = 0; i < size; i++) {
+		drawContours(*frame, polygons, i, color, line_thickness, line_type, vector<Vec4i>(), 0, Point());
+		circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, circ_thickness, line_type, 0);
 	}
+E_CMT
 }
 
-void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, bool draw_circ, Mat* frame, Scalar color) {
+void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, Mat* frame, Scalar color) {
 	int size = circ->size(), circ_count = min(size, n), circ_thickness = 3, line_type = 8, index;
 	sort(circ->begin(), circ->end(), BY_RADIUS);
 
@@ -40,13 +40,13 @@ void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, b
 		index = size - i;
 		key_circ->push_back((*circ)[index]);
 
-		if (draw_circ) {
-			circle(*frame, (*circ)[index].center, (*circ)[index].radius, color, circ_thickness, line_type, 0);
-		}
+B_CMT
+		circle(*frame, (*circ)[index].center, (*circ)[index].radius, color, circ_thickness, line_type, 0);
+E_CMT
 	}
 }
 
-int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
+void detectObjects(Mat* frame, vector<Point2f>* centers, int object_count) {
 	Mat hsv_frame, blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
 	GaussianBlur(*frame, *frame, Size(21, 21), 0);
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
@@ -65,18 +65,13 @@ int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	vector<Circle> red_circ, green_circ, key_circ;
 	Scalar red(0, 0, 255), green(0, 255, 0);
 
-	bool draw_circ = true;
-	findBoundingCircles(&red_contours, &red_circ, draw_circ, frame, red);
-	findBoundingCircles(&green_contours, &green_circ, draw_circ, frame, green);
-
-	findLargestCircles(&key_circ, &red_circ, object_count, draw_circ, frame, red);
-	findLargestCircles(&key_circ, &green_circ, object_count, draw_circ, frame, green);
+	findBoundingCircles(&red_contours, &red_circ, frame, red);
+	findBoundingCircles(&green_contours, &green_circ, frame, green);
+	findLargestCircles(&key_circ, &red_circ, object_count, frame, red);
+	findLargestCircles(&key_circ, &green_circ, object_count, frame, green);
 
 	centers->clear();
-
 	for (int i = 0; i < key_circ.size(); i++) {
 		centers->push_back(key_circ[i].center);
 	}
-
-	return key_circ.size();
 }

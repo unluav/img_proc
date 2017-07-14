@@ -1,5 +1,5 @@
-#include "track_centers.hpp"
-#include <iostream>
+#include "detect_objects.hpp"
+#include <cstdio>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
@@ -9,14 +9,9 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	if (argc < 2) {
-		cout << "USAGE: " << argv[0] << " VIDEO_FILE" << endl;
-		return 1;
-	}
-
-	VideoCapture cap(argv[1]);
+	VideoCapture cap(VIDEO_PATH);
 	if (!cap.isOpened()) {
-		cout << "ERROR: Unable to open video file" << endl;
+		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
 		return 1;
 	}
 
@@ -25,13 +20,16 @@ int main(int argc, char** argv) {
 	vector<Point2f> centers;
 
 	while (cap.read(frame)) {
-		trackCenters(&frame, &centers, object_count);
-		imshow(argv[1], frame);
+		detectObjects(&frame, &centers, object_count);
 
 		cout << frame_count++ << endl;
 		for (int i = 0; i < centers.size(); i++) {
-			cout << "\t(" << centers[i].x << ", " << centers[i].y << ")" << endl;
+			printf("\t(%f, %f)\n", centers[i].x, centers[i].y);
 		}
+
+B_CMT
+		imshow(VIDEO_PATH, frame);
+E_CMT
 
 		if (waitKey(30) >= 0) break;
 	}
