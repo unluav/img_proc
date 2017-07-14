@@ -8,13 +8,11 @@ void sendToCtrl(Heading* head) {
 }
 
 void focusClosestObject(Point2f* closest, Point2f* origin, vector<Point2f>* centers) {
+	double dist = norm((*centers)[0] - *origin), min_dist = dist;
 	*closest = (*centers)[0];
-	Point2f diff = (*centers)[0] - *origin;
-	double dist = norm(diff), min_dist = dist;
 
 	for (int i = 1; i < centers->size(); i++) {
-		diff = (*centers)[i] - *origin;
-		dist = norm(diff);
+		dist = norm((*centers)[i] - *origin);
 
 		if (dist < min_dist) {
 			min_dist = dist;
