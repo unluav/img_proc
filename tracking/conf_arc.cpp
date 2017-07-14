@@ -31,18 +31,18 @@ ConfidenceArc::ConfidenceArc() {
 
 	printf(R"END(
 ConfidenceArc() {
-	prev => (%.1f, %.1f),
-	curr => (%.1f, %.1f),
+	prev => (%.2f, %.2f),
+	curr => (%.2f, %.2f),
 	backtrace => %d,
 	path => {
-		0 => (%.1f, %.1f),
-		1 => (%.1f, %.1f)
+		0 => (%.2f, %.2f),
+		1 => (%.2f, %.2f)
 	},
 	prediction => {
-		point => (%.1f, %.1f),
-		confidence => %.3f,
-		radius => %.3f,
-		range => %.2f
+		point => (%.2f, %.2f),
+		confidence => %f,
+		radius => %f,
+		range => %f
 	}
 })END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
 	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
@@ -63,18 +63,18 @@ ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = 
 
 	printf(R"END(
 ConfidenceArc() {
-	prev => (%.1f, %.1f),
-	curr => (%.1f, %.1f),
+	prev => (%.2f, %.2f),
+	curr => (%.2f, %.2f),
 	backtrace => %d,
 	path => {
-		0 => (%.1f, %.1f),
-		1 => (%.1f, %.1f)
+		0 => (%.2f, %.2f),
+		1 => (%.2f, %.2f)
 	},
 	prediction => {
-		point => (%.1f, %.1f),
-		confidence => %.3f,
-		radius => %.3f,
-		range => %.2f
+		point => (%.2f, %.2f),
+		confidence => %f,
+		radius => %f,
+		range => %f
 	}
 })END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
 	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
@@ -127,6 +127,12 @@ void ConfidenceArc::predictNextFrame(Point2f* current) {
 void ConfidenceArc::recordError(Point2f p1, Point2f p2) {
 	double dist = norm(p1 - p2), threshold = this->prediction.radius * this->prediction.range;
 	this->errors.push_back(dist < threshold ? 0 : dist);
+
+	printf("recordError() return errors => {\n");
+	for (int i = 0; i < this->errors.size(); i++) {
+		printf("\t%d => %f\n", i, this->errors[i]);
+	}
+	printf("}");
 }
 
 void ConfidenceArc::predict() {
@@ -135,11 +141,11 @@ void ConfidenceArc::predict() {
 	this->prediction.confidence = this->predictConfidence();
 
 	printf(R"END(
-predict() returns Prediction {
-	point => (%.1f, %.1f),
-	confidence => %.3f,
-	radius => %.3f,
-	range => %.2f
+predict() returns Prediction => {
+	point => (%.2f, %.2f),
+	confidence => %f,
+	radius => %f,
+	range => %f
 })END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
 	this->prediction.radius, this->prediction.range);
 }
