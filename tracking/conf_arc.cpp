@@ -128,7 +128,7 @@ void ConfidenceArc::recordError(Point2f p1, Point2f p2) {
 	double dist = norm(p1 - p2), threshold = this->prediction.radius * this->prediction.range;
 	this->errors.push_back(dist < threshold ? 0 : dist);
 
-	printf("recordError() return errors => {\n");
+	printf("\nrecordError() returns errors => {\nthreshold => %f\n", threshold);
 	for (int i = 0; i < this->errors.size(); i++) {
 		printf("\t%d => %f\n", i, this->errors[i]);
 	}
