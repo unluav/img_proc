@@ -1,10 +1,12 @@
 #include "conf_arc.hpp"
-#include <cstdio>
+// #include <cstdio>
 
 using namespace std;
 using namespace cv;
 
-Prediction::Prediction(Point2f pt = Point2f(0.0f, 0.0f), double conf = 0, double rad = 0, double rng = DEF_RANGE) {
+Prediction::Prediction() : Prediction(Point2f(0.0f, 0.0f), 0, 0, DEF_RANGE) { }
+
+Prediction::Prediction(Point2f pt, double conf, double rad, double rng) {
 	this->point = pt;
 	this->confidence = conf;
 	this->radius = rad;
@@ -15,30 +17,9 @@ void Prediction::setRange(double rng) {
 	this->range = rng;
 }
 
-ConfidenceArc::ConfidenceArc() {
-	Point2f prev(0.0f, 0.0f), curr(0.0f, 0.0f);
-	int num = DEF_BACKTRACE;
-	
-	this->prev = prev;
-	this->curr = curr;
-	this->backtrace = num;
-	this->recordError(curr, prev);
-	this->recordError(curr, prev);
-	this->path.push_back(prev);
-	this->path.push_back(curr);
-	this->prediction = Prediction();
-	this->predict();
+ConfidenceArc::ConfidenceArc() : ConfidenceArc(Point2f(0.0f, 0.0f), Point2f(0.0f, 0.0f), DEF_BACKTRACE) { }
 
-// 	printf(R"END(
-// ConfidenceArc() returns arc => {
-//           prev => (%f, %f),
-//           curr => (%f, %f),
-//      backtrace => %d
-// }
-// )END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace);
-}
-
-ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = Point2f(0.0f, 0.0f), int num = DEF_BACKTRACE) {
+ConfidenceArc::ConfidenceArc(Point2f prev, Point2f curr, int num) {
 	this->prev = prev;
 	this->curr = curr;
 	this->backtrace = num;
