@@ -31,14 +31,11 @@ ConfidenceArc::ConfidenceArc() {
 
 	printf(R"END(
 ConfidenceArc() returns arc => {
-          prev => (%.2f, %.2f),
-          curr => (%.2f, %.2f),
+          prev => (%f, %f),
+          curr => (%f, %f),
      backtrace => %d
 }
-)END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
-	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
-	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-	this->prediction.radius, this->prediction.range);
+)END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace);
 }
 
 ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = Point2f(0.0f, 0.0f), int num = DEF_BACKTRACE) {
@@ -54,14 +51,11 @@ ConfidenceArc::ConfidenceArc(Point2f prev = Point2f(0.0f, 0.0f), Point2f curr = 
 
 	printf(R"END(
 ConfidenceArc() returns arc => {
-          prev => (%.2f, %.2f),
-          curr => (%.2f, %.2f),
+          prev => (%f, %f),
+          curr => (%f, %f),
      backtrace => %d
 }
-)END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace,
-	this->path[0].x, this->path[0].y, this->path[1].x, this->path[1].y,
-	this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-	this->prediction.radius, this->prediction.range);
+)END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace);
 }
 
 vector<Point2f>* ConfidenceArc::getPath() {
@@ -126,8 +120,8 @@ void ConfidenceArc::predict() {
 
 	printf(R"END(
 predict() returns prediction => {
-         point => (%.2f, %.2f),
-	confidence => %f,
+         point => (%f, %f),
+    confidence => %f,
         radius => %f,
          range => %f
 }
