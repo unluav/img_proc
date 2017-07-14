@@ -46,14 +46,15 @@ void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, b
 	}
 }
 
-void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
+int trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	Mat hsv_frame, blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
+	GaussianBlur(*frame, *frame, Size(21, 21), 0);
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
 	hsv_frame.copyTo(blobs);
 
-	inRange(blobs, Scalar(0, 150, 150), Scalar(25, 250, 250), lower_red_blobs);
-	inRange(blobs, Scalar(155, 70, 70), Scalar(180, 200, 200), upper_red_blobs);
-	inRange(blobs, Scalar(50, 80, 80), Scalar(130, 255, 255), green_blobs);
+	inRange(blobs, Scalar(170, 200, 200), Scalar(180, 255, 255), lower_red_blobs);
+	inRange(blobs, Scalar(0, 200, 200), Scalar(10, 255, 255), upper_red_blobs);
+	inRange(blobs, Scalar(50, 80, 80), Scalar(90, 255, 255), green_blobs);
 	bitwise_or(lower_red_blobs, upper_red_blobs, red_blobs);
 
 	vector<vector<Point>> red_contours, green_contours;
@@ -64,7 +65,7 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	vector<Circle> red_circ, green_circ, key_circ;
 	Scalar red(0, 0, 255), green(0, 255, 0);
 
-	bool draw_circ = false;
+	bool draw_circ = true;
 	findBoundingCircles(&red_contours, &red_circ, draw_circ, frame, red);
 	findBoundingCircles(&green_contours, &green_circ, draw_circ, frame, green);
 
@@ -76,4 +77,6 @@ void trackCenters(Mat* frame, vector<Point2f>* centers, int object_count) {
 	for (int i = 0; i < key_circ.size(); i++) {
 		centers->push_back(key_circ[i].center);
 	}
+
+	return key_circ.size();
 }
