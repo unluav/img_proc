@@ -30,7 +30,6 @@ class ConfidenceArc {
 		cv::Point2f* getCurrent();
 		int* getBacktrace();
 		void setBacktrace(int num);
-		static void predictNextFrame(std::vector<cv::Point2f>* centers, std::vector<ConfidenceArc>* arcs);
 		void predictNextFrame(cv::Point2f* current);
 
 	private:

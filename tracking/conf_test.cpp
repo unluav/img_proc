@@ -3,7 +3,7 @@
 using namespace std;
 using namespace cv;
 
-#define RAND_CAP 0.01
+#define RAND_CAP 0.1
 
 // Just a helpful printer
 void printFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs, int frame) {
@@ -25,26 +25,18 @@ void getNextFrame(vector<Point2f>* centers, int frame) {
 	}
 }
 
-void getFirstFrames(vector<Point2f>* centers, vector<ConfidenceArc>* arcs, int* i) {
-	getNextFrame(centers, (*i)++);
-	vector<Point2f> temp(*centers);
-	getNextFrame(centers, (*i)++);
-
-	for (int j = 0; j < centers->size(); j++) {
-		(*arcs)[j] = ConfidenceArc(temp[j], (*centers)[j], 5);
-	}
-}
-
 int main(int argc, char** argv) {
-	int obj_count = 1, frames = 3, i = 0;
+	int obj_count = 1, frames = 7, i = 0;
 	vector<Point2f> centers(obj_count);
-	vector<ConfidenceArc> arcs();
-	getFirstFrames(&centers, &arcs, &i);
+	vector<ConfidenceArc> arcs(obj_count);
 
-	for (; i < frames; i++) {
+	for (int i = 0; i < frames; i++) {
 		getNextFrame(&centers, i);
 		printFrame(&centers, &arcs, i + 1);
-		ConfidenceArc::predictNextFrame(&centers, &arcs);
+
+		for (int j = 0; j < centers.size(); j++) {
+			arcs[j].predictNextFrame(centers[j]);
+		}
 	}
 
 	return 0;
