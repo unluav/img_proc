@@ -11,7 +11,7 @@ void printFrame(vector<Point2f>* centers, vector<ConfidenceArc>* arcs, int frame
 	
 	for (int i = 0; i < centers->size(); i++) {
 		Prediction* pred = (*arcs)[i].getPrediction();
-		printf("A: (%.3f, %.3f)\t->\t", (*centers)[i].x, (*centers[i]).y);
+		printf("A: (%.3f, %.3f)\t->\t", (*centers)[i].x, (*centers)[i].y);
 		printf("P: (%.3f, %.3f)\t[ %.6f%% ]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 	}
 }
