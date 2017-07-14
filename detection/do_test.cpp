@@ -27,9 +27,7 @@ int main(int argc, char** argv) {
 			printf("\t(%f, %f)\n", centers[i].x, centers[i].y);
 		}
 
-B_CMT
-		imshow(VIDEO_PATH, frame);
-E_CMT
+CMT		imshow(VIDEO_PATH, frame);
 
 		if (waitKey(30) >= 0) break;
 	}

@@ -22,14 +22,13 @@ void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, 
 		}
 	}
 
-B_CMT
-	size = circ->size();
 
-	for (int i = 0; i < size; i++) {
-		drawContours(*frame, polygons, i, color, line_thickness, line_type, vector<Vec4i>(), 0, Point());
-		circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, circ_thickness, line_type, 0);
-	}
-E_CMT
+CMT	size = circ->size();
+
+CMT	for (int i = 0; i < size; i++) {
+CMT		drawContours(*frame, polygons, i, color, line_thickness, line_type, vector<Vec4i>(), 0, Point());
+CMT		circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, circ_thickness, line_type, 0);
+CMT	}
 }
 
 void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, Mat* frame, Scalar color) {
@@ -40,9 +39,7 @@ void findLargestCircles(vector<Circle>* key_circ, vector<Circle>* circ, int n, M
 		index = size - i;
 		key_circ->push_back((*circ)[index]);
 
-B_CMT
-		circle(*frame, (*circ)[index].center, (*circ)[index].radius, color, circ_thickness, line_type, 0);
-E_CMT
+CMT		circle(*frame, (*circ)[index].center, (*circ)[index].radius, color, circ_thickness, line_type, 0);
 	}
 }
 

@@ -6,8 +6,7 @@
 #include <opencv2/core/core.hpp>
 
 #define VIDEO_PATH "/uav_rsc/2roomba.mp4"
-#define B_CMT
-#define E_CMT
+#define CMT //
 
 using namespace std;
 using namespace cv;
