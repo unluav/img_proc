@@ -3,7 +3,7 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 #include "../obj_detection/track_centers.hpp"
-#include "../obj_tracking/conf_arc.hpp" 
+#include "../tracking/conf_arc.hpp" 
 
 struct Heading {
 	uint16_t magnitude;
