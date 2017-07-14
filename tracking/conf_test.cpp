@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 		printFrame(&centers, &arcs, i + 1);
 
 		for (int j = 0; j < centers.size(); j++) {
-			arcs[j].predictNextFrame(centers[j]);
+			arcs[j].predictNextFrame(&centers[j]);
 		}
 	}
 
