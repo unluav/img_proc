@@ -19,6 +19,8 @@ void Prediction::setRange(double rng) {
 
 ConfidenceArc::ConfidenceArc() : ConfidenceArc(Point2f(0.0f, 0.0f), Point2f(0.0f, 0.0f), DEF_BACKTRACE) { }
 
+ConfidenceArc::ConfidenceArc(Point2f prev, Point2f curr) : ConfidenceArc(prev, curr, DEF_BACKTRACE) { }
+
 ConfidenceArc::ConfidenceArc(Point2f prev, Point2f curr, int num) {
 	this->prev = prev;
 	this->curr = curr;
@@ -67,10 +69,10 @@ void ConfidenceArc::setBacktrace(int num) {
 	this->backtrace = num;
 }
 
-void ConfidenceArc::predictNextFrame(Point2f* current) {
-	this->path.push_back(*current);
+void ConfidenceArc::predictNextFrame(Point2f* curr) {
+	this->path.push_back(*curr);
 	this->prev = this->curr;
-	this->curr = *current;
+	this->curr = *curr;
 	this->recordError(this->prediction.point, this->curr);
 	this->predict();
 }

@@ -23,7 +23,8 @@ struct Prediction {
 class ConfidenceArc {
 	public:
 		ConfidenceArc();
-		ConfidenceArc(cv::Point2f prev, cv::Point2f current, int num);
+		ConfidenceArc(cv::Point2f prev, cv::Point2f curr);
+		ConfidenceArc(cv::Point2f prev, cv::Point2f curr, int num);
 		std::vector<cv::Point2f>* getPath();
 		Prediction* getPrediction();
 		std::vector<double>* getErrors();
@@ -31,7 +32,7 @@ class ConfidenceArc {
 		cv::Point2f* getCurrent();
 		int* getBacktrace();
 		void setBacktrace(int num);
-		void predictNextFrame(cv::Point2f* current);
+		void predictNextFrame(cv::Point2f* curr);
 
 	private:
 		cv::Point2f prev, curr;
