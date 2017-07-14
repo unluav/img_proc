@@ -26,9 +26,9 @@ void getNextFrame(vector<Point2f>* centers, int frame) {
 }
 
 void getFirstFrames(vector<Point2f>* centers, vector<ConfidenceArc>* arcs, int* i) {
-	getNextFrame(&centers, (*i)++);
-	vector<Point2f> temp(&centers);
-	getNextFrame(&centers, (*i)++);
+	getNextFrame(*centers, (*i)++);
+	vector<Point2f> temp(*centers);
+	getNextFrame(*centers, (*i)++);
 
 	for (int j = 0; j < centers->size(); j++) {
 		(*arcs)[j] = ConfidenceArc(temp[j], (*centers)[j]);
