@@ -47,8 +47,8 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int object_count = 5) {
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
 	hsv_frame.copyTo(blobs);
 
-	inRange(blobs, Scalar(170, 200, 200), Scalar(180, 255, 255), lower_red_blobs);
-	inRange(blobs, Scalar(0, 200, 200), Scalar(10, 255, 255), upper_red_blobs);
+	inRange(blobs, Scalar(160, 150, 150), Scalar(180, 255, 255), lower_red_blobs);
+	inRange(blobs, Scalar(0, 150, 150), Scalar(20, 255, 255), upper_red_blobs);
 	inRange(blobs, Scalar(50, 80, 80), Scalar(90, 255, 255), green_blobs);
 	bitwise_or(lower_red_blobs, upper_red_blobs, red_blobs);
 

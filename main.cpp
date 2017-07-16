@@ -6,7 +6,7 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-#define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
+//#define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
 
 using namespace std;
 using namespace cv;
@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
 	arc.setBacktrace(2);
 	Point2f* curr = arc.getCurrent();
 	Prediction* pred = arc.getPrediction();
+	pred->setRange(0.5);
 
 	Heading head;
 	int frame_count = 1, object_count = 1, heading_interval = 5;
