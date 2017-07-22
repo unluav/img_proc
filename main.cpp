@@ -6,21 +6,21 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-// #define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
-
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
 	VideoCapture cap;
-	if (argc > 1) {
+	if (argc > 1 && strcmp(argv[1], "-l") == 0) {
+		cap = VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
+	} else if (argc > 1 && strcmp(argv[1], "-i") != 0) {
 		cap = VideoCapture(argv[1]);
 	} else {
 		cap = VideoCapture(VIDEO_PATH);
 	}
 
 	if (!cap.isOpened()) {
-		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
+		printf("ERROR: Unable to open video file\n");
 		return 1;
 	}
 
@@ -67,8 +67,13 @@ int main(int argc, char** argv) {
 			printf("    AVG HEADING  [M: %d, A: %d]\n", head.magnitude, head.angle);
 		}
 
-		if (argc > 2 && strcmp(argv[2], "-i") == 0) imshow(VIDEO_PATH, frame);
-		if (waitKey(30) >= 0) break;
+		if (argc > 1 && strcmp(argv[1], "-i") == 0) {
+			imshow(VIDEO_PATH, frame);
+		} else if (argc > 2 && strcmp(argv[2], "-i") == 0) {
+			imshow(VIDEO_PATH, frame);
+		}
+
+		if (waitKey(1) >= 0) break;
 		frame_count++;
 	}
 
