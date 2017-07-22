@@ -6,13 +6,19 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-//#define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
+// #define VIDEO_PATH "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink"
 
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	VideoCapture cap(VIDEO_PATH);
+	VideoCapture cap;
+	if (argc > 1) {
+		cap = VideoCapture(argv[1]);
+	} else {
+		cap = VideoCapture(VIDEO_PATH);
+	}
+
 	if (!cap.isOpened()) {
 		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
 		return 1;
@@ -44,6 +50,8 @@ int main(int argc, char** argv) {
 		printf("\n**************** FRAME %d ****************\n", frame_count);
 		printf("    Predicted    (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 
+		circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 3, 8, 0);
+		circle(frame, pred->point, pred->radius * pred->range, Scalar(240, 255, 255), 2, 8, 0);
 		arc.predictNextFrame(&closest);
 		updateHeading(&head, pred, &origin);
 		heads.push_back(head);
@@ -59,7 +67,7 @@ int main(int argc, char** argv) {
 			printf("    AVG HEADING  [M: %d, A: %d]\n", head.magnitude, head.angle);
 		}
 
-		if (argc == 2 && strcmp(argv[1], "-i") == 0) imshow(VIDEO_PATH, frame);
+		if (argc > 2 && strcmp(argv[2], "-i") == 0) imshow(VIDEO_PATH, frame);
 		if (waitKey(30) >= 0) break;
 		frame_count++;
 	}
