@@ -32,13 +32,13 @@ ConfidenceArc::ConfidenceArc(Point2f prev, Point2f curr, int num) {
 	this->prediction = Prediction();
 	this->predict();
 
-	printf(R"END(
-ConfidenceArc() returns arc => {
-          prev => (%f, %f),
-          curr => (%f, %f),
-     backtrace => %d
-}
-)END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace);
+// 	printf(R"END(
+// ConfidenceArc() returns arc => {
+//           prev => (%f, %f),
+//           curr => (%f, %f),
+//      backtrace => %d
+// }
+// )END", this->prev.x, this->prev.y, this->curr.x, this->curr.y, this->backtrace);
 }
 
 vector<Point2f>* ConfidenceArc::getPath() {
@@ -81,13 +81,13 @@ void ConfidenceArc::recordError(Point2f p1, Point2f p2) {
 	double dist = norm(p1 - p2), threshold = this->prediction.radius * this->prediction.range;
 	this->errors.push_back(dist < threshold ? 0 : dist);
 
-	printf("\nrecordError() returns errors => {\n");
-	printf("    threshold => %f\n", threshold);
-	printf("         dist => %f\n", dist);
-	for (int i = 0; i < this->errors.size(); i++) {
-		printf("            %d => %f\n", i, this->errors[i]);
-	}
-	printf("}\n");
+	// printf("\nrecordError() returns errors => {\n");
+	// printf("    threshold => %f\n", threshold);
+	// printf("         dist => %f\n", dist);
+	// for (int i = 0; i < this->errors.size(); i++) {
+	// 	printf("            %d => %f\n", i, this->errors[i]);
+	// }
+	// printf("}\n");
 }
 
 void ConfidenceArc::predict() {
@@ -95,15 +95,15 @@ void ConfidenceArc::predict() {
 	this->prediction.radius = this->predictRadius();
 	this->prediction.confidence = this->predictConfidence();
 
-	printf(R"END(
-predict() returns prediction => {
-         point => (%f, %f),
-    confidence => %f,
-        radius => %f,
-         range => %f
-}
-)END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
-	this->prediction.radius, this->prediction.range);
+// 	printf(R"END(
+// predict() returns prediction => {
+//          point => (%f, %f),
+//     confidence => %f,
+//         radius => %f,
+//          range => %f
+// }
+// )END", this->prediction.point.x, this->prediction.point.y, this->prediction.confidence,
+// 	this->prediction.radius, this->prediction.range);
 }
 
 // Calculates point of a prediction via linear approximation

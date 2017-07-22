@@ -9,7 +9,7 @@ bool BY_RADIUS(Circle first, Circle second) {
 
 void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color) { 
 	int size = contours->size();
-	float min_radius = 20; // in pixels
+	float min_radius = 20;
 	vector<vector<Point>> polygons(size);
 	Circle c;
 
@@ -21,12 +21,6 @@ void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, 
 			circ->push_back(c);
 		}
 	}
-
-	// size = circ->size();
-	// for (int i = 0; i < size; i++) {
-	// 	drawContours(*frame, polygons, i, color, 1, 8, vector<Vec4i>(), 0, Point());
-	// 	circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, 3, 8, 0);
-	// }
 }
 
 void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count, Mat* frame, Scalar color) {
@@ -44,7 +38,6 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 
 void detectObjects(Mat* frame, vector<Point2f>* centers, int object_count = 5) {
 	Mat hsv_frame, blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
-	GaussianBlur(*frame, *frame, Size(21, 21), 0);
 	cvtColor(*frame, hsv_frame, COLOR_BGR2HSV);
 	hsv_frame.copyTo(blobs);
 
