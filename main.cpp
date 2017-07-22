@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 	arc.setBacktrace(2);
 	Point2f* curr = arc.getCurrent();
 	Prediction* pred = arc.getPrediction();
-	pred->setRange(0.5);
+	pred->setRange(0.25);
 
 	Heading head;
 	int frame_count = 1, object_count = 1, heading_interval = 5;
