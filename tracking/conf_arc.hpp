@@ -10,6 +10,7 @@
 #define EPSILON 0.000001
 #define DEF_BACKTRACE 5
 #define DEF_RANGE 0.05
+#define DEF_FRM_DIAG 2202.91
 
 struct Prediction {
 	double confidence, radius, range;

@@ -4,8 +4,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/gpu/gpu.hpp>
 
-#define VIDEO_PATH "/uav_rsc/2roomba.mp4"
+#define VID_PATH "/uav_rsc/2roomba.mp4"
 
 using namespace std;
 using namespace cv;
@@ -44,6 +45,7 @@ struct Circle {
 	}
 };
 
+void inRange_gpu(gpu::GpuMat &src, Scalar &lowerb, Scalar &upperb, gpu::GpuMat &dst);
 bool BY_RADIUS(Circle first, Circle second);
 void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color);
 void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count, Mat* frame, Scalar color);

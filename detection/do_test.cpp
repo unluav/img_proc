@@ -9,9 +9,9 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	VideoCapture cap(VIDEO_PATH);
+	VideoCapture cap(VID_PATH);
 	if (!cap.isOpened()) {
-		printf("ERROR: Unable to open video file: %s\n", VIDEO_PATH);
+		printf("ERROR: Unable to open video file: %s\n", VID_PATH);
 		return 1;
 	}
 
@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
 			printf("\t(%f, %f)\n", centers[i].x, centers[i].y);
 		}
 
-		imshow(VIDEO_PATH, frame);
-		if (waitKey(30) >= 0) break;
+		//imshow(VID_PATH, frame);
+		if (waitKey(1) >= 0) break;
 	}
 
 	return 0;
