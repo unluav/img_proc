@@ -9,7 +9,7 @@ bool BY_RADIUS(Circle first, Circle second) {
 
 void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color) { 
 	int size = contours->size();
-	float min_radius = 20; // in pixels
+	float min_radius = 20;
 	vector<vector<Point>> polygons(size);
 	Circle c;
 
@@ -21,12 +21,6 @@ void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, 
 			circ->push_back(c);
 		}
 	}
-
-	// size = circ->size();
-	// for (int i = 0; i < size; i++) {
-	// 	drawContours(*frame, polygons, i, color, 1, 8, vector<Vec4i>(), 0, Point());
-	// 	circle(*frame, (*circ)[i].center, (*circ)[i].radius, color, 3, 8, 0);
-	// }
 }
 
 void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count, Mat* frame, Scalar color) {
@@ -36,15 +30,12 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 	for (int i = 1; i <= circ_count; i++) {
 		j = size - i;
 		key_circ->push_back((*circ)[j]);
-
-		circle(*frame, (*circ)[j].center, (*circ)[j].radius, color, 3, 8, 0);
-		circle(*frame, (*circ)[j].center, 1, color, 3, 8, 0);
 	}
 }
 
 void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
 	gpu::GpuMat d_frame;
-	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs
+	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs;
 	Scalar lowest_red(0, 150, 150), lower_red(20, 255, 255);
 	Scalar upper_red(160, 150, 150), uppest_red(180, 255, 255);
 	Scalar lower_grn(50, 80, 80), upper_grn(90, 255, 255);
