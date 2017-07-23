@@ -52,8 +52,8 @@ int main(int argc, char** argv) {
 		printf("\n**************** FRAME %d ****************\n", frame_count);
 		printf("    Predicted    (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 
-		circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 3, 8, 0);
-		circle(frame, pred->point, pred->radius * pred->range, Scalar(240, 255, 255), 2, 8, 0);
+		circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 3);
+		circle(frame, pred->point, pred->radius * pred->range, Scalar(240, 255, 255), 2);
 		arc.predictNextFrame(&closest);
 		updateHeading(&head, pred, &origin);
 		heads.push_back(head);

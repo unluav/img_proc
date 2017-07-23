@@ -13,7 +13,7 @@ set ( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -O3 -gencode arch=compute_61,code=sm_6
 include_directories ( "/usr/local/cuda-8.0/include" )
 include_directories ( "/usr/include/glib-2.0" "/usr/include/libxml2" "/usr/lib/aarch64-linux-gnu/glib-2.0/include/" )
 
-cuda_add_executable (
+add_executable (
         main.exe
         main.cpp
         nav/nav.cpp
