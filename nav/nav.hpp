@@ -12,5 +12,5 @@ struct Heading {
 
 void sendToCtrl(Heading* head);
 void focusClosestObject(cv::Point2f* closest, cv::Point2f* origin, std::vector<cv::Point2f>* centers);
-void updateHeading(Heading* head, Prediction* pred, Point2f* origin);
-void averageHeadings(Heading* head, vector<Heading>* heads);
+void updateHeading(Heading* head, Prediction* pred, cv::Point2f* origin);
+void averageHeadings(Heading* head, std::vector<Heading>* heads);

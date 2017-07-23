@@ -7,7 +7,7 @@ bool BY_RADIUS(Circle first, Circle second) {
 	return first.radius <= second.radius;
 }
 
-void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color) { 
+void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ) { 
 	int size = contours->size();
 	float min_radius = 20;
 	vector<vector<Point>> polygons(size);
@@ -30,6 +30,8 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 	for (int i = 1; i <= circ_count; i++) {
 		j = size - i;
 		key_circ->push_back((*circ)[j]);
+		circle(*frame, (*circ)[j].center, (*circ)[j].radius, color, 3);
+		circle(*frame, (*circ)[j].center, 2, color, 3);
 	}
 }
 
@@ -56,8 +58,8 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
 
 	findContours(h_red_blobs, red_contours, red_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	findContours(h_grn_blobs, grn_contours, grn_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-	findBoundingCircles(&red_contours, &red_circ, frame, red);
-	findBoundingCircles(&grn_contours, &grn_circ, frame, grn);
+	findBoundingCircles(&red_contours, &red_circ);
+	findBoundingCircles(&grn_contours, &grn_circ);
 	filterLargest(&key_circ, &red_circ, obj_count, frame, red);
 	filterLargest(&key_circ, &grn_circ, obj_count, frame, grn);
 

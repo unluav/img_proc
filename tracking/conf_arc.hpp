@@ -6,6 +6,7 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <cstdio>
 
 #define EPSILON 0.000001
 #define DEF_BACKTRACE 5

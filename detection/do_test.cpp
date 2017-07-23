@@ -22,12 +22,12 @@ int main(int argc, char** argv) {
 	while (cap.read(frame)) {
 		detectObjects(&frame, &centers, object_count);
 
-		cout << frame_count++ << endl;
+		printf("\n******** FRAME %d ********\n", frame_count++);
 		for (int i = 0; i < centers.size(); i++) {
 			printf("\t(%f, %f)\n", centers[i].x, centers[i].y);
 		}
 
-		//imshow(VID_PATH, frame);
+		imshow(VID_PATH, frame);
 		if (waitKey(1) >= 0) break;
 	}
 

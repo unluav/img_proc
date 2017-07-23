@@ -8,19 +8,16 @@
 
 #define VID_PATH "/uav_rsc/2roomba.mp4"
 
-using namespace std;
-using namespace cv;
-
 struct Circle {
-	Point2f center;
+	cv::Point2f center;
 	float radius;
 
 	Circle() {
-		center = Point2f(0.0f, 0.0f);
+		center = cv::Point2f(0.0f, 0.0f);
 		radius = 0.0f;
 	}
 
-	Circle(Point2f c, float r) {
+	Circle(cv::Point2f c, float r) {
 		center = c;
 		radius = r;
 	}
@@ -45,10 +42,9 @@ struct Circle {
 	}
 };
 
-void inRange_gpu(gpu::GpuMat &src, Scalar &lowerb, Scalar &upperb, gpu::GpuMat &dst);
 bool BY_RADIUS(Circle first, Circle second);
-void findBoundingCircles(vector<vector<Point>>* contours, vector<Circle>* circ, Mat* frame, Scalar color);
-void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count, Mat* frame, Scalar color);
-void detectObjects(Mat* frame, vector<Point2f>* centers, int object_count);
+void findBoundingCircles(std::vector<std::vector<cv::Point>>* contours, std::vector<Circle>* circ);
+void filterLargest(std::vector<Circle>* key_circ, std::vector<Circle>* circ, int max_count, cv::Mat* frame, cv::Scalar color);
+void detectObjects(cv::Mat* frame, std::vector<cv::Point2f>* centers, int object_count);
 
 #endif
