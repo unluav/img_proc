@@ -6,6 +6,8 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
+#define VIDEO_PATH "/uav_rsc/2roomba.mp4"
+
 using namespace std;
 using namespace cv;
 
@@ -51,11 +53,7 @@ int main(int argc, char** argv) {
 		printf("    Predicted    (%.1f, %.1f) [%.1f%%]\n", pred->point.x, pred->point.y, pred->confidence * 100);
 
 		circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 3, 8, 0);
-<<<<<<< HEAD
-		circle(frame, pred->point, pred->radius * pred->range, Scalar(240, 255, 255), 3, 8, 0);
-=======
 		circle(frame, pred->point, pred->radius * pred->range, Scalar(240, 255, 255), 2, 8, 0);
->>>>>>> demo_ready
 		arc.predictNextFrame(&closest);
 		updateHeading(&head, pred, &origin);
 		heads.push_back(head);
@@ -71,10 +69,6 @@ int main(int argc, char** argv) {
 			printf("    AVG HEADING  [M: %d, A: %d]\n", head.magnitude, head.angle);
 		}
 
-<<<<<<< HEAD
-		if (argc > 2 && strcmp(argv[2], "-i") == 0) imshow(VIDEO_PATH, frame);
-		if (waitKey(30) >= 0) break;
-=======
 		if (argc > 1 && strcmp(argv[1], "-i") == 0) {
 			imshow(VIDEO_PATH, frame);
 		} else if (argc > 2 && strcmp(argv[2], "-i") == 0) {
@@ -82,13 +76,11 @@ int main(int argc, char** argv) {
 		}
 
 		if (waitKey(1) >= 0) break;
->>>>>>> demo_ready
+		frm.DumpInfo();
 		frame_count++;
 	}
 
 	printf("\n");
 	frm.Stop();
-	frm.DumpInfo();
-
 	return 0;
 }

@@ -42,46 +42,33 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 	}
 }
 
-void detectObjects(Mat* frame, vector<Point2f>* centers, int object_count = 5) {
-	Mat cpu_frame;
-	gpu::GpuMat gpu_frame, hsv_frame, blobs, red_blobs, lower_red_blobs, upper_red_blobs, green_blobs;
-	gpu_frame.upload(*frame);
-
-	gpu::cvtColor(gpu_frame, hsv_frame, COLOR_BGR2HSV);
-	hsv_frame.copyTo(blobs);
-	gpu_frame.copyTo(lower_red_blobs);
-	gpu_frame.copyTo(upper_red_blobs);
-	gpu_frame.copyTo(green_blobs);
-
-	Scalar red1(160, 150, 150), red2(180, 255, 255), red3(0, 150, 150), red4(20, 255, 255);
-	Scalar green1(50, 80, 80), green2(90, 255, 255);
+void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
+	gpu::GpuMat d_frame;
+	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs
+	Scalar lowest_red(0, 150, 150), lower_red(20, 255, 255);
+	Scalar upper_red(160, 150, 150), uppest_red(180, 255, 255);
+	Scalar lower_grn(50, 80, 80), upper_grn(90, 255, 255);
+	Scalar red(0, 0, 255), grn(0, 255, 0);
 	
-	// inRange_gpu... it's the gift that keeps on giving
-	inRange_gpu(blobs, red1, red2, lower_red_blobs);
-	inRange_gpu(blobs, red3, red4, upper_red_blobs);
-	inRange_gpu(blobs, green1, green2, green_blobs);
-	gpu::bitwise_or(lower_red_blobs, upper_red_blobs, red_blobs);
+	d_frame.upload(*frame);
+	gpu::cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
+	d_frame.download(h_frame);
+	
+	inRange(h_frame, lowest_red, lower_red, h_lwr_red_blobs);
+	inRange(h_frame, upper_red, uppest_red, h_upr_red_blobs);
+	inRange(h_frame, lower_grn, upper_grn, h_grn_blobs);
+	bitwise_or(h_lwr_red_blobs, h_upr_red_blobs, h_red_blobs);
 
-	green_blobs.download(cpu_frame);
-	imshow(VID_PATH, cpu_frame);
+	vector<vector<Point>> red_contours, grn_contours;
+	vector<Vec4i> red_hierarchy, grn_hierarchy;
+	vector<Circle> red_circ, grn_circ, key_circ;
 
-	vector<vector<Point>> red_contours, green_contours;
-	vector<Vec4i> red_hierarchy, green_hierarchy;
-	vector<Circle> red_circ, green_circ, key_circ;
-	Scalar red(0, 0, 255), green(0, 255, 0);
-
-	Mat cpu_red_blobs, cpu_green_blobs;
-	red_blobs.download(cpu_red_blobs);
-	green_blobs.download(cpu_green_blobs);
-	cvtColor(cpu_red_blobs, cpu_red_blobs, COLOR_BGR2GRAY);
-	cvtColor(cpu_green_blobs, cpu_green_blobs, COLOR_BGR2GRAY);
-
-	findContours(cpu_red_blobs, red_contours, red_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-	findContours(cpu_green_blobs, green_contours, green_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(h_red_blobs, red_contours, red_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(h_grn_blobs, grn_contours, grn_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	findBoundingCircles(&red_contours, &red_circ, frame, red);
-	findBoundingCircles(&green_contours, &green_circ, frame, green);
-	filterLargest(&key_circ, &red_circ, object_count, frame, red);
-	filterLargest(&key_circ, &green_circ, object_count, frame, green);
+	findBoundingCircles(&grn_contours, &grn_circ, frame, grn);
+	filterLargest(&key_circ, &red_circ, obj_count, frame, red);
+	filterLargest(&key_circ, &grn_circ, obj_count, frame, grn);
 
 	centers->clear();
 	for (int i = 0; i < key_circ.size(); i++) {
