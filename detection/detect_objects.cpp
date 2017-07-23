@@ -30,8 +30,6 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 	for (int i = 1; i <= circ_count; i++) {
 		j = size - i;
 		key_circ->push_back((*circ)[j]);
-		circle(*frame, (*circ)[j].center, (*circ)[j].radius, color, 3);
-		circle(*frame, (*circ)[j].center, 2, color, 3);
 	}
 }
 
