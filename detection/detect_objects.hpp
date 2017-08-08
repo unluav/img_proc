@@ -4,7 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
-#include <opencv2/gpu.hpp>
+// #include <opencv2/gpu.hpp>
 
 #define VID_PATH "/uav_rsc/2roomba.mp4"
 
