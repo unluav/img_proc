@@ -5,6 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/cuda.hpp>
+#include <opencv2/core/cudaarithm.hpp>
 #include <opencv2/objdetect.hpp>
 
 #define VID_PATH "/uav_rsc/2roomba.mp4"

@@ -44,7 +44,7 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
 	Scalar red(0, 0, 255), grn(0, 255, 0);
 	
 	d_frame.upload(*frame);
-	cuda::cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
+	cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
 	d_frame.download(h_frame);
 	
 	inRange(h_frame, lowest_red, lower_red, h_lwr_red_blobs);
