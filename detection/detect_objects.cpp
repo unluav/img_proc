@@ -1,5 +1,5 @@
 #include "detect_objects.hpp"
-#include <iostream>
+#include <cstdio>
 
 using namespace std;
 using namespace cv;
@@ -37,7 +37,6 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_count
 }
 
 void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
-	cout << cuda::getCudaEnabledDeviceCount() << endl;
 	cuda::GpuMat d_frame;
 	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs;
 	Scalar lowest_red(0, 150, 150), lower_red(20, 255, 255);
@@ -46,9 +45,9 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int obj_count = 5) {
 	Scalar red(0, 0, 255), grn(0, 255, 0);
 	
 	d_frame.upload(*frame);
-	cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
+	cuda::cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
 	d_frame.download(h_frame);
-	
+
 	inRange(h_frame, lowest_red, lower_red, h_lwr_red_blobs);
 	inRange(h_frame, upper_red, uppest_red, h_upr_red_blobs);
 	inRange(h_frame, lower_grn, upper_grn, h_grn_blobs);

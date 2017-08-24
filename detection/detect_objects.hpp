@@ -5,9 +5,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/cuda.hpp>
-#include <opencv2/objdetect.hpp>
-
-#define VID_PATH "/uav_rsc/2roomba.mp4"
+#include <opencv2/cudaimgproc.hpp>
 
 struct Circle {
 	cv::Point2f center;

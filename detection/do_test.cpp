@@ -1,6 +1,8 @@
 #include "detect_objects.hpp"
 #include <cstdio>
 
+#define VID_PATH "/uav_rsc/arena-center2017.mp4"
+
 using namespace std;
 using namespace cv;
 
