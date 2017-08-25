@@ -6,7 +6,7 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-#define VIDEO_PATH "/uav_rsc/arena-center2017.mp4"
+#define VIDEO_PATH "/uav_rsc/lab-roomba.mp4"
 
 using namespace std;
 using namespace cv;
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	pred->setRange(0.25);
 
 	Heading head;
-	int frame_count = 1, object_count = 1, heading_interval = 5;
+	int frame_count = 1, object_count = 2, heading_interval = 5;
 	vector<Heading> heads;
 	FrameRateMonitor frm;
 	frm.Start();
