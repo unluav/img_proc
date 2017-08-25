@@ -6,12 +6,13 @@
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/opencv.hpp>
 
-#define VIDEO_PATH "/uav_rsc/2roomba.mp4"
+#define VIDEO_PATH "/uav_rsc/arena-center2017.mp4"
 
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
+	printf("CUDA DEVICES: %d\n", cuda::getCudaEnabledDeviceCount());
 	VideoCapture cap;
 	if (argc > 1 && strcmp(argv[1], "-l") == 0) {
 		cap = VideoCapture("nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");

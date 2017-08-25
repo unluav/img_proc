@@ -1,9 +1,7 @@
 #include "detect_objects.hpp"
 #include <cstdio>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/opencv.hpp>
+
+#define VID_PATH "/uav_rsc/arena-center2017.mp4"
 
 using namespace std;
 using namespace cv;
