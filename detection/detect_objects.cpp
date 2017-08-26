@@ -1,6 +1,8 @@
 #include "detect_objects.hpp"
 #include <cstdio>
 
+#define COLOR_OFFSET 30
+
 using namespace std;
 using namespace cv;
 
@@ -35,22 +37,24 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_obj_c
 	}
 }
 
+int shiftHue(int hue) {
+	return (hue + COLOR_OFFSET) % 180;
+}
+
 void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) {
-	const int COLOR_OFFSET = 30;
 	cuda::GpuMat d_frame;
 	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs;
-	Scalar lower_red(10, 150, 150), upper_red(50, 255, 255);
-	Scalar lower_grn(50 + COLOR_OFFSET, 80, 80), upper_grn(90 + COLOR_OFFSET, 255, 255);
+	Scalar lower_red(shiftHue(160), 150, 150), upper_red(shiftHue(20), 255, 255);
+	Scalar lower_grn(shiftHue(50), 80, 80), upper_grn(shiftHue(90), 255, 255);
 	Scalar red(0, 0, 255), grn(0, 255, 0);
-	
+
 	d_frame.upload(*frame);
 	cuda::cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
 	d_frame.download(h_frame);
 
 	for (int i = 0; i < h_frame.rows; i++) {
         for (int j = 0; j < h_frame.cols; j++) {
-			h_frame.at<Vec3b>(i, j)[0] += COLOR_OFFSET;
-			h_frame.at<Vec3b>(i, j)[0] %= 180;
+			h_frame.at<Vec3b>(i, j)[0] = shiftHue(h_frame.at<Vec3b>(i, j)[0]);
         }
     }
 
