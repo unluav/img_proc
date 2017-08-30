@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
 		}
 
 		if (show_images) {
-			circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 3);
+			circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 2);
 			imshow("", frame);
 		}
 
