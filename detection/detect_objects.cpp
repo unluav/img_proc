@@ -1,8 +1,6 @@
 #include "detect_objects.hpp"
 #include <cstdio>
 
-#define COLOR_OFFSET 30
-
 using namespace std;
 using namespace cv;
 
@@ -38,15 +36,12 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_obj_c
 }
 
 int shiftHue(int hue) {
-	return (hue + COLOR_OFFSET) % 180;
+	return (hue + 30) % 180;
 }
 
 void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) {
 	cuda::GpuMat d_frame;
-	Mat h_frame, h_red_blobs, h_lwr_red_blobs, h_upr_red_blobs, h_grn_blobs;
-	Scalar lower_red(shiftHue(160), 150, 150), upper_red(shiftHue(20), 255, 255);
-	Scalar lower_grn(shiftHue(50), 80, 80), upper_grn(shiftHue(90), 255, 255);
-	Scalar red(0, 0, 255), grn(0, 255, 0);
+	Mat h_frame, h_red_blobs, h_grn_blobs;
 
 	d_frame.upload(*frame);
 	cuda::cvtColor(d_frame, d_frame, COLOR_BGR2HSV);
@@ -58,19 +53,18 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) 
         }
     }
 
-	inRange(h_frame, lower_red, upper_red, h_red_blobs);
-	inRange(h_frame, lower_grn, upper_grn, h_grn_blobs);
+	inRange(h_frame, Scalar(shiftHue(160), 150, 150), Scalar(shiftHue(20), 255, 255), h_red_blobs);
+	inRange(h_frame, Scalar(shiftHue(50), 80, 80), Scalar(shiftHue(90), 255, 255), h_grn_blobs);
 
 	vector<vector<Point>> red_contours, grn_contours;
-	vector<Vec4i> red_hierarchy, grn_hierarchy;
 	vector<Circle> red_circ, grn_circ, key_circ;
 
-	findContours(h_red_blobs, red_contours, red_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-	findContours(h_grn_blobs, grn_contours, grn_hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(h_red_blobs, red_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+	findContours(h_grn_blobs, grn_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 	findBoundingCircles(&red_contours, &red_circ);
 	findBoundingCircles(&grn_contours, &grn_circ);
-	filterLargest(&key_circ, &red_circ, max_obj_count, frame, red);
-	filterLargest(&key_circ, &grn_circ, max_obj_count, frame, grn);
+	filterLargest(&key_circ, &red_circ, max_obj_count, frame, Scalar(0, 0, 255));
+	filterLargest(&key_circ, &grn_circ, max_obj_count, frame, Scalar(0, 255, 0));
 
 	centers->clear();
 	for (int i = 0; i < key_circ.size(); i++) {
