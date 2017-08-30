@@ -7,11 +7,6 @@
 #include <opencv2/objdetect.hpp>
 #include <vector>
 
-#define EPSILON 0.000001
-#define DEF_BACKTRACE 5
-#define DEF_RANGE 0.05
-#define DEF_FRM_DIAG 1468.8
-
 struct Prediction {
 	double confidence, radius, range;
 	cv::Point2f point;
@@ -44,9 +39,9 @@ class ConfidenceArc {
 
 		void recordError(cv::Point2f p1, cv::Point2f p2);
 		void predict();
-		cv::Point2f predictPoint();
-		double predictRadius();
-		double predictConfidence();
+		void predictPoint();
+		void predictRadius();
+		void predictConfidence();
 };
 
 #endif

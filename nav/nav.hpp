@@ -10,7 +10,8 @@ struct Heading {
 	uint16_t angle;
 };
 
-void sendToCtrl(Heading* head);
+void sendToCtrl(Heading* heading);
 void focusClosestObject(cv::Point2f* closest, cv::Point2f* origin, std::vector<cv::Point2f>* centers);
-void updateHeading(Heading* head, Prediction* pred, cv::Point2f* origin);
-void averageHeadings(Heading* head, std::vector<Heading>* heads);
+void updateHeading(Heading* heading, Prediction* pred, cv::Point2f* origin);
+void averageHeadings(Heading* heading, std::vector<Heading>* heading_record);
+void reportAverageHeading(Heading* heading, std::vector<Heading>* heading_record);

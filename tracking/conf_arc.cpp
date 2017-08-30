@@ -1,5 +1,10 @@
 #include "conf_arc.hpp"
 
+#define EPSILON 0.000001
+#define DEF_BACKTRACE 5
+#define DEF_RANGE 0.05
+#define FRAME_DIAG 1468.8
+
 using namespace std;
 using namespace cv;
 
@@ -74,18 +79,18 @@ void ConfidenceArc::recordError(Point2f p1, Point2f p2) {
 }
 
 void ConfidenceArc::predict() {
-	this->prediction.point = this->predictPoint();
-	this->prediction.radius = this->predictRadius();
-	this->prediction.confidence = this->predictConfidence();
+	this->predictPoint();
+	this->predictRadius();
+	this->predictConfidence();
 }
 
 // Calculates point of a prediction via linear approximation
-Point2f ConfidenceArc::predictPoint() {
-	return 2 * this->curr - this->prev;
+void ConfidenceArc::predictPoint() {
+	this->prediction.point = 2 * this->curr - this->prev;
 }
 
 // Calculates radius of a prediction by sampling the errors from previous predictions
-double ConfidenceArc::predictRadius() {
+void ConfidenceArc::predictRadius() {
 	double mean = 0, variance = 0;
 	int size = this->errors.size(), length = this->backtrace <= 0 ? size : min(this->backtrace, size);
 
@@ -100,14 +105,13 @@ double ConfidenceArc::predictRadius() {
 	pair<double, double> stats = make_pair(mean, sqrt(variance));
 	default_random_engine sample;
 	normal_distribution<double> distribution(stats.first, stats.second);
-	return fabs(distribution(sample));
+	this->prediction.radius = fabs(distribution(sample));
 }
 
-// Calculates confidence in a prediction by dividing the area of the predicted
+// Calculates confidence in a prediction by calculating the area of the predicted
 // circle and dividing by the area of the circle representing distance covered
 // Lower bounded by 0
-double ConfidenceArc::predictConfidence() {
-	double pred_rad = 2 * this->prediction.radius;
-	double conf = 1 - pred_rad / DEF_FRM_DIAG;
-	return conf < 0 ? 0 : conf;
+void ConfidenceArc::predictConfidence() {
+	double conf = 1 - 2 * this->prediction.radius / FRAME_DIAG;
+	this->prediction.confidence = conf < 0 ? 0 : conf;
 }

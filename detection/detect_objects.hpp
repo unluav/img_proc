@@ -43,7 +43,7 @@ struct Circle {
 
 bool BY_RADIUS(Circle first, Circle second);
 void findBoundingCircles(std::vector<std::vector<cv::Point>>* contours, std::vector<Circle>* circ);
-void filterLargest(std::vector<Circle>* key_circ, std::vector<Circle>* circ, int max_count, cv::Mat* frame, cv::Scalar color);
-void detectObjects(cv::Mat* frame, std::vector<cv::Point2f>* centers, int object_count);
+void filterLargest(std::vector<Circle>* key_circ, std::vector<Circle>* circ, int max_obj_count, cv::Mat* frame, cv::Scalar color);
+void detectObjects(cv::Mat* frame, std::vector<cv::Point2f>* centers, int max_obj_count);
 
 #endif

@@ -1,31 +1,32 @@
 #include "detect_objects.hpp"
 #include <cstdio>
-
-#define VID_PATH "/uav_rsc/arena-center2017.mp4"
+#include <string>
 
 using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	VideoCapture cap(VID_PATH);
-	if (!cap.isOpened()) {
-		printf("ERROR: Unable to open video file: %s\n", VID_PATH);
-		return 1;
-	}
-
-	int frame_count = 1, object_count = 2;
+	string video_path = argc > 1 ? argv[1] : "/uav_rsc/arena-center2017.mp4";
+	VideoCapture cap(video_path);
+	int frame_count = 1;
 	Mat frame;
 	vector<Point2f> centers;
 
+	if (!cap.isOpened()) {
+		printf("ERROR: Unable to open video file %s\n", video_path.c_str());
+		return 1;
+	}
+
 	while (cap.read(frame)) {
-		detectObjects(&frame, &centers, object_count);
+		detectObjects(&frame, &centers, 2);
 
-		printf("\n******** FRAME %d ********\n", frame_count++);
+		printf("**************** FRAME %d ****************\n", frame_count++);
 		for (int i = 0; i < centers.size(); i++) {
-			printf("\t(%f, %f)\n", centers[i].x, centers[i].y);
+			printf("\t(%.1f, %.1f)", centers[i].x, centers[i].y);
 		}
+		printf("\n\n");
 
-		imshow(VID_PATH, frame);
+		imshow(video_path, frame);
 		if (waitKey(1) >= 0) break;
 	}
 
