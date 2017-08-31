@@ -44,19 +44,11 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) 
 	d_frame.upload(*frame);
 	cuda::cvtColor(d_frame, d_frame, COLOR_RGB2HSV);
 
-	d_red_blobs = cuda::GpuMat(d_frame);
-	d_grn_blobs = cuda::GpuMat(d_frame);
+	d_red_blobs = cuda::GpuMat(d_frame.rows, d_frame.cols, CV_8UC1);
+	d_grn_blobs = cuda::GpuMat(d_frame.rows, d_frame.cols, CV_8UC1);
 
 	cudaInRange(d_frame, Scalar(110, 0, 0), Scalar(149, 215, 215), d_red_blobs);
 	cudaInRange(d_frame, Scalar(0, 80, 80), Scalar(49, 255, 255), d_grn_blobs);
-
-	vector<cuda::GpuMat> temp_mats;
-	cuda::split(d_red_blobs, temp_mats);
-	d_red_blobs = cuda::GpuMat(temp_mats[0]);
-
-	temp_mats.clear();
-	cuda::split(d_grn_blobs, temp_mats);
-	d_grn_blobs = cuda::GpuMat(temp_mats[0]);
 
 	d_red_blobs.download(h_red_blobs);
 	d_grn_blobs.download(h_grn_blobs);
