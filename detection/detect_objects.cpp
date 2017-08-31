@@ -50,11 +50,16 @@ void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) 
 	cudaInRange(d_frame, Scalar(110, 0, 0), Scalar(149, 215, 215), d_red_blobs);
 	cudaInRange(d_frame, Scalar(0, 80, 80), Scalar(49, 255, 255), d_grn_blobs);
 
+	vector<cuda::GpuMat> temp_mats;
+	cuda::split(d_red_blobs, temp_mats);
+	d_red_blobs = cuda::GpuMat(temp_mats[0]);
+
+	temp_mats.clear();
+	cuda::split(d_grn_blobs, temp_mats);
+	d_grn_blobs = cuda::GpuMat(temp_mats[0]);
+
 	d_red_blobs.download(h_red_blobs);
 	d_grn_blobs.download(h_grn_blobs);
-
-	transform(h_red_blobs, h_red_blobs, Matx13f(1,1,1));
-	transform(h_grn_blobs, h_grn_blobs, Matx13f(1,1,1));
 
 	findContours(h_red_blobs, red_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 	findContours(h_grn_blobs, grn_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
