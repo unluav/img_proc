@@ -41,7 +41,7 @@ struct Circle {
 	}
 };
 
-void inRange_gpu(cv::cuda::GpuMat &src, cv::Scalar &lowerb, cv::Scalar &upperb, cv::cuda::GpuMat &dst);
+void inRange_gpu(cv::cuda::GpuMat &src, cv::Scalar lowerb, cv::Scalar upperb, cv::cuda::GpuMat &dst);
 bool BY_RADIUS(Circle first, Circle second);
 void findBoundingCircles(std::vector<std::vector<cv::Point>>* contours, std::vector<Circle>* circ);
 void filterLargest(std::vector<Circle>* key_circ, std::vector<Circle>* circ, int max_obj_count, cv::Mat* frame, cv::Scalar color);

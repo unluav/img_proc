@@ -17,7 +17,7 @@ __global__ void inRange_kernel(const PtrStepSz<uchar3> src, PtrStepSzb dst,
     dst(y, x) = 0;
 }
 
-void inRange_gpu(GpuMat &src, cv::Scalar &lowerb, cv::Scalar &upperb,
+void inRange_gpu(GpuMat &src, Scalar lowerb, Scalar upperb,
                  GpuMat &dst) {
   const int m = 32;
   int numRows = src.rows, numCols = src.cols;
