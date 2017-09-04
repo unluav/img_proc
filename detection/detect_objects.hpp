@@ -6,6 +6,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/cuda.hpp>
 #include <opencv2/cudaimgproc.hpp>
+#include <opencv2/cudaarithm.hpp>
 
 struct Circle {
 	cv::Point2f center;
@@ -41,6 +42,7 @@ struct Circle {
 	}
 };
 
+void cudaInRange(cv::cuda::GpuMat &src, cv::Scalar lowerb, cv::Scalar upperb, cv::cuda::GpuMat &dst);
 bool BY_RADIUS(Circle first, Circle second);
 void findBoundingCircles(std::vector<std::vector<cv::Point>>* contours, std::vector<Circle>* circ);
 void filterLargest(std::vector<Circle>* key_circ, std::vector<Circle>* circ, int max_obj_count, cv::Mat* frame, cv::Scalar color);

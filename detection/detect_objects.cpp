@@ -36,17 +36,22 @@ void filterLargest(vector<Circle>* key_circ, vector<Circle>* circ, int max_obj_c
 }
 
 void detectObjects(Mat* frame, vector<Point2f>* centers, int max_obj_count = 5) {
-	cuda::GpuMat d_frame;
-	Mat h_frame, h_red_blobs, h_grn_blobs;
+	cuda::GpuMat d_frame, d_red_blobs, d_grn_blobs;
+	Mat h_red_blobs, h_grn_blobs;
 	vector<vector<Point>> red_contours, grn_contours;
 	vector<Circle> red_circ, grn_circ, key_circ;
 
 	d_frame.upload(*frame);
 	cuda::cvtColor(d_frame, d_frame, COLOR_RGB2HSV);
-	d_frame.download(h_frame);
 
-	inRange(h_frame, Scalar(110, 150, 150), Scalar(159, 255, 255), h_red_blobs);
-	inRange(h_frame, Scalar(10, 80, 80), Scalar(49, 255, 255), h_grn_blobs);
+	d_red_blobs = cuda::GpuMat(d_frame.rows, d_frame.cols, CV_8UC1);
+	d_grn_blobs = cuda::GpuMat(d_frame.rows, d_frame.cols, CV_8UC1);
+
+	cudaInRange(d_frame, Scalar(110, 0, 0), Scalar(149, 215, 215), d_red_blobs);
+	cudaInRange(d_frame, Scalar(0, 80, 80), Scalar(49, 255, 255), d_grn_blobs);
+
+	d_red_blobs.download(h_red_blobs);
+	d_grn_blobs.download(h_grn_blobs);
 
 	findContours(h_red_blobs, red_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 	findContours(h_grn_blobs, grn_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
