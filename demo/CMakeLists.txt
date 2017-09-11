@@ -1,9 +1,10 @@
 cmake_minimum_required ( VERSION 2.8 )
-project ( detect_objects )
+project ( demo )
 
 option ( CUDA_USE_STATIC_CUDA_RUNTIME OFF )
 find_package ( OpenCV REQUIRED )
 find_package ( CUDA REQUIRED )
+add_library ( FRM STATIC ../utilities/FrameRateMonitor.cpp )
 
 set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 set ( CMAKE_CXX_STANDARD_REQUIRED ON )
@@ -13,10 +14,9 @@ include_directories ( "/usr/local/cuda-8.0/include" )
 include_directories ( "/usr/include/glib-2.0" "/usr/include/libxml2" "/usr/lib/aarch64-linux-gnu/glib-2.0/include/" )
 
 cuda_add_executable (
-	do_test.exe
-	do_test.cpp
-	detect_objects.cpp
-	in_range.cu
+	demo.exe
+	demo.cpp
 )
 
-target_link_libraries ( do_test.exe ${OpenCV_LIBS} )
+target_link_libraries ( demo.exe FRM )
+target_link_libraries ( demo.exe ${OpenCV_LIBS} )
