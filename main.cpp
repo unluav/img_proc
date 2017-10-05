@@ -1,9 +1,11 @@
 #include "nav/nav.hpp"
+#include "detection/grid_detect.hpp"
 #include "utilities/FrameRateMonitor.h"
 #include <cstdio>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/videoio/videoio.hpp>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -51,10 +53,25 @@ int main(int argc, char** argv) {
 	pred->setRange(0.25);		// Decimal value representing the error threshold percentage for predictions
 	arc.setBacktrace(2);		// Number of previous frames to learn from when making a prediction
 
+        VideoWriter outputVideo;                                        // Open the output
+        outputVideo.open("test.avi", 
+                static_cast<int>(cap.get(CAP_PROP_FOURCC)),
+                cap.get(CAP_PROP_FPS), 
+                Size((int) cap.get(CAP_PROP_FRAME_WIDTH), 
+                  (int) cap.get(CAP_PROP_FRAME_HEIGHT)), true);
+
+        if (!outputVideo.isOpened())
+        {
+                cout  << "Could not open the output video for write " << endl;
+                return -1;
+        }
+
 	while (cap.read(frame)) {
 		frm.MarkFrame();
 
-		detectObjects(&frame, &centers, max_obj_count);
+                detectLines(&frame, outputVideo);
+
+		/*detectObjects(&frame, &centers, max_obj_count);
 		focusClosestObject(&closest_obj, &origin, &centers);
 		arc.predictNextFrame(&closest_obj);
 		updateHeading(&heading, pred, &origin);
@@ -68,12 +85,12 @@ int main(int argc, char** argv) {
 		if (frame_count % heading_interval == 0) {
 			reportAverageHeading(&heading, &heading_record);
 			printf("    Avg Heading  [M: %d, A: %d]\n", heading.magnitude, heading.angle);
-		}
+		}*/
 
-		if (show_images) {
+		/*if (show_images) {
 			circle(frame, pred->point, pred->radius, Scalar(240, 255, 255), 2);
 			imshow("", frame);
-		}
+		}*/
 
 		if (waitKey(1) >= 0) break;
 		frame_count++;

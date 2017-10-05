@@ -19,6 +19,7 @@ cuda_add_executable (
         nav/nav.cpp
         detection/detect_objects.cpp
         detection/in_range.cu
+	detection/grid_detect.cpp
         tracking/conf_arc.cpp
 )
 
